@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import requests
 import requests.exceptions
+from Addon import Addon
+import logging
 
 
 class AddonWindow(QDialog):
@@ -27,15 +29,31 @@ class AddonWindow(QDialog):
         try:
             response = requests.get(self.window.ui.leditAddonUrl.text())
 
-            print(response)
+            logging.debug(response)
+
+            if not response:
+                logging.critical("Did not get back a 200 OK response.")
+                return
 
         except requests.exceptions.MissingSchema as e:
-            print(e)
+            logging.critical(e)
             self.ErrorBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.")
+            return
         except requests.exceptions.ConnectionError as ce:
-            print(ce)
+            logging.critical(ce)
             self.ErrorBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
                 self.window.ui.leditAddonUrl.text()))
+            return
+
+        current_addon = Addon(url=self.window.ui.leditAddonUrl.text())
+
+        if not current_addon.valid_url:
+            self.ErrorBox.emit("Invalid URL",
+                               "Invalid WoW Addon URL. If you think this is a mistake, contact developer.")
+        logging.debug("Addon URL: {0}\nAddon name: {1}\n Addon version: {2}".format(current_addon.url,
+                                                                                    current_addon.name,
+                                                                                    current_addon.latest_version))
+
 
     @pyqtSlot(str, str)
     def show_error(self, message='', inform=''):

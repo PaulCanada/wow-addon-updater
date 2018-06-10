@@ -1,4 +1,5 @@
 import requests
+import requests.exceptions
 import logging
 
 
@@ -16,23 +17,39 @@ class Addon(object):
         self.current_version = current_version
         self.latest_version = latest_version
 
+        self.valid_url = self.check_for_valid_url()
+
+        if self.valid_url:
+            self.name = self.get_name()
+            self.latest_version = self.get_update_version()
+
     def get_version_index(self, addon_path):
         return{
             'curse-projects': self.curse_project_index,
             'curse-addons': self.curse_addon_index
-        }.get(addon_path)
+        }.get(addon_path, None)
 
     def get_update_version(self):
-        page = requests.get(self.url + '/files')
-        page.raise_for_status()
+        try:
+            page = requests.get(self.url + '/files')
+        except requests.exceptions.ConnectionError as ce:
+            logging.critical(ce)
+            return None
+
+        type = self.get_version_index(self.get_website_type())
+        logging.info("Type: {0}".format(type))
 
         content = str(page.content)
         logging.debug("Content of page: {0}".format(content))
 
-        index_of_version = content.find('data-name=')
-        print(index_of_version)
+        start_ind = content.rfind(type)
 
-        print(self.get_version_index(self.get_website_type()))
+        end_ind = content.find(">", start_ind)
+        version = content[start_ind + len(type):end_ind].strip("\"")
+
+        logging.info("Version: {0}".format(version))
+
+        return version
 
     def get_name(self):
         url = self.url
@@ -60,12 +77,16 @@ class Addon(object):
             logging.critical("Could not determine website type.")
             return None
 
+    def check_for_valid_url(self):
+        urls_to_check = ["wow.curseforge.com/projects", "www.curseforge.com/wow/addons"]
+        return any(ext in self.url for ext in urls_to_check)
+
 
 if __name__ == '__main__':
     a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods/files")
-    a.get_name()
-    # print(a.get_website_type())
-    # soup = BeautifulSoup(requests.get("https://wow.curseforge.com/projects/deadly-boss-mods").content)
-    # print(soup)
+    # a = Addon(url="http://www.google.com")
+    if not a.valid_url:
+        a.get_name()
+        a.get_update_version()
 
 

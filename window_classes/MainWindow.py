@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
