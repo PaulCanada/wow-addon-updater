@@ -5,6 +5,7 @@ import requests
 import requests.exceptions
 from Addon import Addon
 import logging
+from Worker import Worker
 
 
 class AddonWindow(QDialog):
@@ -13,16 +14,18 @@ class AddonWindow(QDialog):
 
     def __init__(self, settings, parent):
         super(QDialog, self).__init__()
+        self.worker = Worker(self.add)
 
         self.window = QDialog()
         self.window.ui = Ui_Form()
         self.window.ui.setupUi(self)
-        self.window.ui.buttonBox.accepted.connect(self.add)
+        self.window.ui.buttonBox.accepted.connect(self.worker.start)
         self.window.ui.buttonBox.rejected.connect(self.close)
         self.MessageBox.connect(self.show_message_box)
 
         self.settings = settings
         self.parent = parent
+
 
     def add(self):
         print(self.window.ui.leditAddonUrl.text())
@@ -33,37 +36,40 @@ class AddonWindow(QDialog):
 
             if not response:
                 logging.critical("Did not get back a 200 OK response.")
-                return
+                return False
 
         except requests.exceptions.MissingSchema as e:
             logging.critical(e)
             self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.", 'critical')
-            return
+            return False
         except requests.exceptions.ConnectionError as ce:
             logging.critical(ce)
             self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
                 self.window.ui.leditAddonUrl.text(), 'critical'))
-            return
+            return False
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text())
 
         if not current_addon.valid_url:
             self.MessageBox.emit("Invalid URL",
-                               "Invalid WoW Addon URL. If you think this is a mistake, contact developer.", 'critical')
+                                 "Invalid WoW Addon URL. If you think this is a mistake, contact developer.",
+                                 'critical')
             return False
 
         logging.debug("Addon URL: {0}\nAddon name: {1}\nAddon version: {2}".format(current_addon.url,
                                                                                    current_addon.name,
                                                                                    current_addon.latest_version))
 
-        logging.info("Checking if addon: {0} is already in config...".format(current_addon.name))
+        logging.info("Checking if addon: {0} is already in config.".format(current_addon.name))
         exists = self.check_if_addon_in_config(current_addon)
 
         if exists:
             self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
             return False
         else:
+            logging.debug("Addon is not in list. Adding addon: {0}".format(current_addon.name))
             addon_dict = {'name': current_addon.name.title().replace("-", " ").replace("_", " "),
+                          'url': current_addon.url,
                           'current_version': 'Unknown',
                           'latest_version': current_addon.latest_version}
 
@@ -71,7 +77,8 @@ class AddonWindow(QDialog):
             self.settings.save_config()
             self.settings.load_config()
 
-            self.MessageBox.emit("Addon added.", "", 'inform')
+            self.MessageBox.emit("Addon information added.", "", 'inform')
+            self.window.ui.leditAddonUrl.setText("")
             return True
 
     def check_if_addon_in_config(self, addon):
@@ -81,16 +88,17 @@ class AddonWindow(QDialog):
             return False
 
     @pyqtSlot(str, str, str)
-    def show_message_box(self, message='', inform='', type=QMessageBox.Warning):
+    def show_message_box(self, message='', inform='', message_type='warn'):
         message_box = QMessageBox()
-        if type == 'inform':
+
+        if message_type == 'inform':
             message_box.setIcon(QMessageBox.Information)
-        elif type == 'warn':
+        elif message_type == 'warn':
             message_box.setIcon(QMessageBox.Warning)
         else:
             message_box.setIcon(QMessageBox.Critical)
 
+        message_box.setStandardButtons(QMessageBox.Ok)
         message_box.setText(message)
         message_box.setInformativeText(inform)
-        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         message_box.exec()
