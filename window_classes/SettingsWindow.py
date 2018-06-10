@@ -1,16 +1,15 @@
 from gui_py.settings_gui import Ui_Settings
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QDialog
 
 
-class SettingsWindow(QWidget):
+class SettingsWindow(QDialog):
 
     def __init__(self):
-        super(QWidget, self).__init__()
+        super(QDialog, self).__init__()
 
-        self.window = QWidget()
+        self.window = QDialog()
         self.window.ui = Ui_Settings()
         self.window.ui.setupUi(self)
-        self.show()
 
 
 def main():

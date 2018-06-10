@@ -35,6 +35,7 @@ class MainWindow(MainWindowPrompt):
 
     try:
         OpenAddonAdder = pyqtSignal()
+        OpenSettingsWindow = pyqtSignal()
         settings = Settings()
 
     except Exception as e:
@@ -47,13 +48,22 @@ class MainWindow(MainWindowPrompt):
         self.window.ui = Ui_MainWindow()
         self.window.ui.setupUi(self)
         self.window.ui.splitter.setStyleSheet(HANDLE_STYLE)
+
         self.OpenAddonAdder.connect(self.add_addon)
+        self.OpenSettingsWindow.connect(self.show_settings_window)
+
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
+        self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
 
     @pyqtSlot()
     def add_addon(self):
         addon_window = AddonWindow(self.settings, self)
         addon_window.exec()
+
+    @pyqtSlot()
+    def show_settings_window(self):
+        settings_window = SettingsWindow()
+        settings_window.exec()
 
 
 def main():
