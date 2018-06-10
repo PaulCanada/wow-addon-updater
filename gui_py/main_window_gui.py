@@ -57,6 +57,8 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
+        self.menuAddon = QtWidgets.QMenu(self.menubar)
+        self.menuAddon.setObjectName("menuAddon")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -67,10 +69,14 @@ class Ui_MainWindow(object):
         self.actionSettings.setObjectName("actionSettings")
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionAddAddon = QtWidgets.QAction(MainWindow)
+        self.actionAddAddon.setObjectName("actionAddAddon")
         self.menuFile.addAction(self.actionSettings)
         self.menuFile.addAction(self.actionAbout)
         self.menuFile.addAction(self.actionClose)
+        self.menuAddon.addAction(self.actionAddAddon)
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuAddon.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -81,9 +87,11 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuAddon.setTitle(_translate("MainWindow", "Addon"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
+        self.actionAddAddon.setText(_translate("MainWindow", "Add Addon"))
 
 
 if __name__ == "__main__":
