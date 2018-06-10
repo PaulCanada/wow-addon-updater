@@ -1,7 +1,5 @@
 import os
-import sys
 import requests
-import shutil
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
