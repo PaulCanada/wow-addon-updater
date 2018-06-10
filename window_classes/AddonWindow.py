@@ -9,7 +9,7 @@ import logging
 
 class AddonWindow(QDialog):
 
-    ErrorBox = pyqtSignal(str, str)
+    MessageBox = pyqtSignal(str, str, str)
 
     def __init__(self, settings, parent):
         super(QDialog, self).__init__()
@@ -19,7 +19,7 @@ class AddonWindow(QDialog):
         self.window.ui.setupUi(self)
         self.window.ui.buttonBox.accepted.connect(self.add)
         self.window.ui.buttonBox.rejected.connect(self.close)
-        self.ErrorBox.connect(self.show_error)
+        self.MessageBox.connect(self.show_message_box)
 
         self.settings = settings
         self.parent = parent
@@ -37,19 +37,21 @@ class AddonWindow(QDialog):
 
         except requests.exceptions.MissingSchema as e:
             logging.critical(e)
-            self.ErrorBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.")
+            self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.", 'critical')
             return
         except requests.exceptions.ConnectionError as ce:
             logging.critical(ce)
-            self.ErrorBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
-                self.window.ui.leditAddonUrl.text()))
+            self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
+                self.window.ui.leditAddonUrl.text(), 'critical'))
             return
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text())
 
         if not current_addon.valid_url:
-            self.ErrorBox.emit("Invalid URL",
-                               "Invalid WoW Addon URL. If you think this is a mistake, contact developer.")
+            self.MessageBox.emit("Invalid URL",
+                               "Invalid WoW Addon URL. If you think this is a mistake, contact developer.", 'critical')
+            return False
+
         logging.debug("Addon URL: {0}\nAddon name: {1}\nAddon version: {2}".format(current_addon.url,
                                                                                    current_addon.name,
                                                                                    current_addon.latest_version))
@@ -58,7 +60,8 @@ class AddonWindow(QDialog):
         exists = self.check_if_addon_in_config(current_addon)
 
         if exists:
-            self.ErrorBox.emit("Addon already added", "This addon is already in your addons list.")
+            self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
+            return False
         else:
             addon_dict = {'name': current_addon.name.title().replace("-", " ").replace("_", " "),
                           'current_version': 'Unknown',
@@ -68,17 +71,26 @@ class AddonWindow(QDialog):
             self.settings.save_config()
             self.settings.load_config()
 
+            self.MessageBox.emit("Addon added.", "", 'inform')
+            return True
+
     def check_if_addon_in_config(self, addon):
         if addon.name in self.settings.data['addons']:
             return True
         else:
             return False
 
-    @pyqtSlot(str, str)
-    def show_error(self, message='', inform=''):
-        error = QMessageBox()
-        error.setIcon(QMessageBox.Warning)
-        error.setText(message)
-        error.setInformativeText(inform)
-        error.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        error.exec()
+    @pyqtSlot(str, str, str)
+    def show_message_box(self, message='', inform='', type=QMessageBox.Warning):
+        message_box = QMessageBox()
+        if type == 'inform':
+            message_box.setIcon(QMessageBox.Information)
+        elif type == 'warn':
+            message_box.setIcon(QMessageBox.Warning)
+        else:
+            message_box.setIcon(QMessageBox.Critical)
+
+        message_box.setText(message)
+        message_box.setInformativeText(inform)
+        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        message_box.exec()
