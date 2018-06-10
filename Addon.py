@@ -53,7 +53,7 @@ class Addon(object):
 
     def get_name(self):
         url = self.url
-        if url.find('/files'):
+        if url.__contains__('/files'):
             logging.info("URL name contains '/files'")
             url = url[:-6]
             logging.info("New url: {0}".format(url))

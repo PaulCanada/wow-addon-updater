@@ -50,10 +50,29 @@ class AddonWindow(QDialog):
         if not current_addon.valid_url:
             self.ErrorBox.emit("Invalid URL",
                                "Invalid WoW Addon URL. If you think this is a mistake, contact developer.")
-        logging.debug("Addon URL: {0}\nAddon name: {1}\n Addon version: {2}".format(current_addon.url,
-                                                                                    current_addon.name,
-                                                                                    current_addon.latest_version))
+        logging.debug("Addon URL: {0}\nAddon name: {1}\nAddon version: {2}".format(current_addon.url,
+                                                                                   current_addon.name,
+                                                                                   current_addon.latest_version))
 
+        logging.info("Checking if addon: {0} is already in config...".format(current_addon.name))
+        exists = self.check_if_addon_in_config(current_addon)
+
+        if exists:
+            self.ErrorBox.emit("Addon already added", "This addon is already in your addons list.")
+        else:
+            addon_dict = {'name': current_addon.name.title().replace("-", " ").replace("_", " "),
+                          'current_version': 'Unknown',
+                          'latest_version': current_addon.latest_version}
+
+            self.settings.write_addon_info(current_addon.name, addon_dict)
+            self.settings.save_config()
+            self.settings.load_config()
+
+    def check_if_addon_in_config(self, addon):
+        if addon.name in self.settings.data['addons']:
+            return True
+        else:
+            return False
 
     @pyqtSlot(str, str)
     def show_error(self, message='', inform=''):
