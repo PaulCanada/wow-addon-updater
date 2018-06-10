@@ -9,7 +9,7 @@ test_url_a = "https://wow.curseforge.com/projects/details/files/latest"
 test_url_b = "https://www.curseforge.com/wow/addons/file"
 
 
-class Downloader:
+class Downloader(object):
     """
     This class attempts to download an updated version of the zip archive of the addon requested.
 

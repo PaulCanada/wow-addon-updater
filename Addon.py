@@ -1,7 +1,11 @@
 import requests
 import logging
 
-class Addon:
+
+logging.basicConfig(level=logging.DEBUG)
+
+
+class Addon(object):
 
     curse_project_index = 'data-name='
     curse_addon_index = 'file__name full'
@@ -18,7 +22,7 @@ class Addon:
             'curse-addons': self.curse_addon_index
         }.get(addon_path)
 
-    def get_version(self):
+    def get_update_version(self):
         page = requests.get(self.url + '/files')
         page.raise_for_status()
 
@@ -29,6 +33,17 @@ class Addon:
         print(index_of_version)
 
         print(self.get_version_index(self.get_website_type()))
+
+    def get_name(self):
+        url = self.url
+        if url.find('/files'):
+            logging.info("URL name contains '/files'")
+            url = url[:-6]
+            logging.info("New url: {0}".format(url))
+
+        name = url[url.rfind('/') + 1:]
+        logging.info(name)
+        return name
 
     def get_website_type(self):
         if 'wow.curseforge.com/projects' in self.url:
@@ -47,5 +62,10 @@ class Addon:
 
 
 if __name__ == '__main__':
-    a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods")
-    print(a.get_website_type())
+    a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods/files")
+    a.get_name()
+    # print(a.get_website_type())
+    # soup = BeautifulSoup(requests.get("https://wow.curseforge.com/projects/deadly-boss-mods").content)
+    # print(soup)
+
+

@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.DEBUG)
 config_path = './config/addons.json'
 
 
-class Settings:
+class Settings(object):
 
     def __init__(self):
         self.data = {}
