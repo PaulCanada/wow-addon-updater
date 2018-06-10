@@ -12,6 +12,7 @@ class Settings(object):
     def __init__(self):
         self.data = {}
         self.initialize_data()
+        self.files_to_update = []
         self.load_config()
 
     def initialize_data(self):
