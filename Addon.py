@@ -21,7 +21,14 @@ class Addon(object):
 
         if self.valid_url:
             self.name = self.get_name()
+
+            if self.name is False:
+                self.valid_url = False
+
             self.latest_version = self.get_update_version()
+
+            if self.latest_version is None:
+                self.valid_url = False
 
     def get_version_index(self, addon_path):
         return{
@@ -36,16 +43,19 @@ class Addon(object):
             logging.critical(ce)
             return None
 
-        type = self.get_version_index(self.get_website_type())
-        logging.info("Type: {0}".format(type))
+        web_type = self.get_version_index(self.get_website_type())
+        if web_type is None:
+            return False
+
+        logging.info("Type: {0}".format(web_type))
 
         content = str(page.content)
         logging.debug("Content of page: {0}".format(content))
 
-        start_ind = content.rfind(type)
+        start_ind = content.rfind(web_type)
 
         end_ind = content.find(">", start_ind)
-        version = content[start_ind + len(type):end_ind].strip("\"")
+        version = content[start_ind + len(web_type):end_ind].strip("\"")
 
         logging.info("Version: {0}".format(version))
 
@@ -54,6 +64,9 @@ class Addon(object):
     def get_name(self):
         url = self.url
         if url.__contains__('/files'):
+            if not url.endswith('/files'):
+                logging.critical("Bad URL.")
+                return False
             logging.info("URL name contains '/files'")
             url = url[:-6]
             logging.info("New url: {0}".format(url))
@@ -68,7 +81,7 @@ class Addon(object):
         elif 'www.curseforge.com/wow/addons' in self.url:
             return 'curse-addons'
         elif 'mods.curse.com/addons/wow' in self.url:
-            return ''
+            return 'curse-addons'
         elif 'wowinterface' in self.url:
             return ''
         elif 'git.tikui' in self.url:
