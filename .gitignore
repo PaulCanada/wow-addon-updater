@@ -105,8 +105,10 @@ venv.bak/
 
 # PyCharm
 *.xml
-./build
-./dist
+build/
+dist/
+Addons/
+config/
 *.iml
 
 # User-specific stuff
