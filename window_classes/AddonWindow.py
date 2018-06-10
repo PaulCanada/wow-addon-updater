@@ -26,7 +26,6 @@ class AddonWindow(QDialog):
         self.settings = settings
         self.parent = parent
 
-
     def add(self):
         print(self.window.ui.leditAddonUrl.text())
         try:
@@ -41,6 +40,10 @@ class AddonWindow(QDialog):
         except requests.exceptions.MissingSchema as e:
             logging.critical(e)
             self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.", 'critical')
+            return False
+        except requests.exceptions.InvalidSchema as ie:
+            logging.critical(ie)
+            self.MessageBox.emit("Invalid URL: invalid schema.", "Bad URL request.", 'critical')
             return False
         except requests.exceptions.ConnectionError as ce:
             logging.critical(ce)
@@ -62,6 +65,7 @@ class AddonWindow(QDialog):
 
         logging.info("Checking if addon: {0} is already in config.".format(current_addon.name))
         exists = self.check_if_addon_in_config(current_addon)
+        logging.critical("Ex: {0}".format(exists))
 
         if exists:
             self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
