@@ -3,14 +3,13 @@ from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import requests
 import requests.exceptions
-import sys
 
 
 class AddonWindow(QDialog):
 
     ErrorBox = pyqtSignal(str, str)
 
-    def __init__(self):
+    def __init__(self, settings, parent):
         super(QDialog, self).__init__()
 
         self.window = QDialog()
@@ -20,6 +19,8 @@ class AddonWindow(QDialog):
         self.window.ui.buttonBox.rejected.connect(self.close)
         self.ErrorBox.connect(self.show_error)
 
+        self.settings = settings
+        self.parent = parent
 
     def add(self):
         print(self.window.ui.leditAddonUrl.text())

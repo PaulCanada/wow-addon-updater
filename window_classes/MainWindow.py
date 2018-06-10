@@ -4,6 +4,7 @@ from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
 import sys
+from Settings import Settings
 from overrides.internal_overrides import MainWindowPrompt
 
 sys._excepthook = sys.excepthook
@@ -34,8 +35,8 @@ class MainWindow(MainWindowPrompt):
 
     try:
         OpenAddonAdder = pyqtSignal()
-        # settings_window = SettingsWindow()
-        # addon_window = AddonWindow()
+        settings = Settings()
+
     except Exception as e:
         print(e)
 
@@ -51,8 +52,9 @@ class MainWindow(MainWindowPrompt):
 
     @pyqtSlot()
     def add_addon(self):
-        addon_window = AddonWindow()
+        addon_window = AddonWindow(self.settings, self)
         addon_window.exec()
+
 
 def main():
     app = QApplication(sys.argv)
