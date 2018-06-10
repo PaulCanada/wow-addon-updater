@@ -18,6 +18,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtWidgets.QSplitter(self.centralwidget)
         self.splitter.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.splitter.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.splitter.setLineWidth(1)
         self.splitter.setMidLineWidth(1)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
@@ -33,7 +34,10 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.tviewAddons = QtWidgets.QTreeView(self.frameAddons)
         self.tviewAddons.setObjectName("tviewAddons")
-        self.gridLayout_3.addWidget(self.tviewAddons, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.tviewAddons, 1, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self.frameAddons)
+        self.label.setObjectName("label")
+        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
         self.frameOutput = QtWidgets.QFrame(self.splitter)
         self.frameOutput.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frameOutput.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -74,6 +78,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Wow Addon Updater"))
+        self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
