@@ -10,7 +10,7 @@ class SettingsWindow(QWidget):
         self.window = QWidget()
         self.window.ui = Ui_Settings()
         self.window.ui.setupUi(self)
-        self.window.show()
+        self.show()
 
 
 def main():
