@@ -84,7 +84,8 @@ class Addon(object):
                 return False
 
             logging.info("URL name contains '/files'")
-            url = url[:-6]
+            logging.critical("File name before change: {0}".format(url))
+            self.url = url[:-6]
             logging.info("New url: {0}".format(url))
 
         elif url.__contains__('tukui'):
@@ -122,8 +123,10 @@ class Addon(object):
 if __name__ == '__main__':
     a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods/files")
     # a = Addon(url="http://www.google.com")
+    print("modified addon: {0}".format(a.url))
     if not a.valid_url:
         a.get_name()
         a.get_update_version()
+
 
 
