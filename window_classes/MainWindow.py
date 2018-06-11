@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtCore import Qt
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
@@ -49,6 +50,7 @@ class MainWindow(MainWindowPrompt):
         OutputUpdater = pyqtSignal(str)
         PromptUpdate = pyqtSignal(list)
         DownloadStart = pyqtSignal()
+        MessageBox = pyqtSignal(str, str, str)
 
         # settings = Settings()
 
@@ -61,15 +63,11 @@ class MainWindow(MainWindowPrompt):
         self.window = QMainWindow()
         self.window.ui = Ui_MainWindow()
         self.window.ui.setupUi(self)
+        self.settings = Settings()
 
         self.download_worker = Worker(self.execute_download)
         self.update_worker = Worker(self.execute_check_updates)
         self.init_ui()
-
-        self.settings = Settings()
-
-        if self.settings.wow_dir == '':
-            self.OpenSettingsWindow.emit()
 
     def init_ui(self):
         self.window.ui.splitter.setStyleSheet(HANDLE_STYLE)
@@ -79,6 +77,7 @@ class MainWindow(MainWindowPrompt):
         self.OutputUpdater.connect(self.insert_output_text)
         self.PromptUpdate.connect(self.prompt_to_update)
         self.DownloadStart.connect(self.execute_download)
+        self.MessageBox.connect(self.show_message_box)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
@@ -99,7 +98,39 @@ class MainWindow(MainWindowPrompt):
         settings_window = SettingsWindow(self)
         settings_window.exec()
 
+    @pyqtSlot(str, str, str)
+    def show_message_box(self, message='', inform='', message_type='warn'):
+        message_box = QMessageBox()
+
+        if message_type == 'inform':
+            message_box.setIcon(QMessageBox.Information)
+        elif message_type == 'warn':
+            message_box.setIcon(QMessageBox.Warning)
+        else:
+            message_box.setIcon(QMessageBox.Critical)
+
+        message_box.setStandardButtons(QMessageBox.Ok)
+        message_box.setWindowTitle("Hey Listen!")
+        message_box.setText(message)
+        message_box.setInformativeText(inform)
+        message_box.exec()
+
     def execute_check_updates(self):
+
+        if self.settings.data['settings']['wow_dir'] == '':
+            self.MessageBox.emit("Addons directory not found",
+                                 "Please specify the directory where you want the addons to be downloaded to from "
+                                 "'File' -> 'Settings'."
+                                 "This is usually 'World of Warcraft/Addons'.", 'inform')
+            return
+
+        if len(self.settings.data['addons']) == 0:
+            self.MessageBox.emit("No addons have been specified.",
+                                 "To add an addon, press 'Addon' -> 'Add Addon' and enter the URL of the addon.",
+                                 "warn")
+            return
+
+        self.OutputUpdater.emit("Checking for updates...")
         updater = UpdateChecker(self)
         update_list = updater.check_for_updates()
 
@@ -152,7 +183,7 @@ class MainWindow(MainWindowPrompt):
             self.OutputUpdater.emit("Extracting files to {0}".format(os.path.abspath(file_dir)))
             try:
                 zipper = zipfile.ZipFile(file_dir, 'r')
-                zipper.extractall(self.settings.wow_dir + '/' + item.name)
+                zipper.extractall(self.settings.data['settings']['wow_dir'] + '/' + item.name)
                 zipper.close()
                 self.OutputUpdater.emit("Extraction complete.")
 
