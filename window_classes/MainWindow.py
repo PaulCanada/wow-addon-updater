@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
@@ -83,7 +84,6 @@ class MainWindow(MainWindowPrompt):
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
 
-
     @pyqtSlot()
     def add_addon(self):
         addon_window = AddonWindow(self.settings, self)
@@ -92,6 +92,7 @@ class MainWindow(MainWindowPrompt):
     @pyqtSlot(str)
     def insert_output_text(self, text):
         self.window.ui.teditOutput.insertPlainText(text + '\n')
+        self.window.ui.teditOutput.moveCursor(QTextCursor.End)
 
     @pyqtSlot()
     def show_settings_window(self):
