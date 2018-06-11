@@ -23,15 +23,16 @@ class Settings(object):
             logging.info("Config directory exists.")
 
         if not os.path.exists(config_path):
+            self.data['settings'] = {'wow_dir': ''}
             self.data['addons'] = {}
 
             logging.info("Creating config.json file.")
             with(open(config_path, 'w')) as f:
                 f.write(simplejson.dumps(self.data, indent=4, ensure_ascii=True))
 
-    def write_addon_info(self, key, info):
+    def write_addon_info(self, primary_key, key, info):
         # self.data.get('addons').append({key: info})
-        self.data['addons'][key] = info
+        self.data[primary_key][key] = info
 
     def load_config(self):
         with open(config_path, 'r') as f:
