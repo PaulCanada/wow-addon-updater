@@ -14,7 +14,6 @@ class Settings(object):
         self.initialize_data()
         self.files_to_update = []
         self.load_config()
-        self.wow_dir = './Addons'
 
     def initialize_data(self):
         if not os.path.isdir('./config'):
@@ -24,7 +23,7 @@ class Settings(object):
             logging.info("Config directory exists.")
 
         if not os.path.exists(config_path):
-            self.data['settings'] = {}
+            self.data['settings'] = {'wow_dir': ''}
             self.data['addons'] = {}
 
             logging.info("Creating config.json file.")
