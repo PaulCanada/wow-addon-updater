@@ -19,8 +19,7 @@ class Downloader(object):
 
     """
 
-    def __init__(self, settings, wow_dir=""):
-        self.install_dir = wow_dir
+    def __init__(self, settings):
         self.settings = settings
         self.zip_dir = './zips'
         self.url = ''
