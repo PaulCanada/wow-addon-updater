@@ -77,7 +77,7 @@ class AddonWindow(QDialog):
                           'current_version': 'Unknown',
                           'latest_version': current_addon.latest_version}
 
-            self.settings.write_addon_info(current_addon.name, addon_dict)
+            self.settings.write_addon_info('addons', current_addon.name, addon_dict)
             self.settings.save_config()
             self.settings.load_config()
 
