@@ -99,6 +99,7 @@ class AddonWindow(QDialog):
             # Save and load the config.
             self.settings.save_config()
             self.settings.load_config()
+            self.parent.UpdateTreeView.emit()
             return True
 
     def check_if_addon_in_config(self, addon):

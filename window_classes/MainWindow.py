@@ -1,13 +1,14 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtCore import Qt
+from PyQt5.Qt import Qt
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
 import sys
 import os
 import zipfile
+from PyQt5.QtWidgets import QTreeView
 from Worker import Worker
 from Settings import Settings
 from Downloader import Downloader
@@ -51,6 +52,7 @@ class MainWindow(MainWindowPrompt):
         PromptUpdate = pyqtSignal(list)
         DownloadStart = pyqtSignal()
         MessageBox = pyqtSignal(str, str, str)
+        UpdateTreeView = pyqtSignal()
 
         # settings = Settings()
 
@@ -78,10 +80,14 @@ class MainWindow(MainWindowPrompt):
         self.PromptUpdate.connect(self.prompt_to_update)
         self.DownloadStart.connect(self.execute_download)
         self.MessageBox.connect(self.show_message_box)
+        self.UpdateTreeView.connect(self.update_tree_view)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
+        self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
+
+        self.UpdateTreeView.emit()
 
     @pyqtSlot()
     def add_addon(self):
@@ -97,6 +103,39 @@ class MainWindow(MainWindowPrompt):
     def show_settings_window(self):
         settings_window = SettingsWindow(self)
         settings_window.exec()
+
+    @pyqtSlot()
+    def update_tree_view(self):
+        tree_model = self.window.ui.tviewAddons
+        model = QStandardItemModel(tree_model)
+        tree_model.setModel(model)
+
+        tree_data = self.settings.data['addons']
+        logging.debug("Tree view data: {0}".format(tree_data))
+
+        # No addons are loaded.
+        # TODO: Insert blank row indicating there are no addons.
+        if len(tree_data) == 0:
+            return
+        else:
+            model.clear()
+
+        for parent_name in tree_data:
+            parent_item = QStandardItem(tree_data[parent_name]['name'])
+            url_item = QStandardItem("Addon Link: {0}".format(tree_data[parent_name]['url']))
+            curr_ver_item = QStandardItem("Current Version: {0}".format(tree_data[parent_name]['current_version']))
+            latest_ver_item = QStandardItem("Latest Version:    {0}".format(tree_data[parent_name]['latest_version']))
+
+            logging.debug("Parent item: {0}".format(parent_name))
+
+            model.appendRow(parent_item)
+
+            # Append URL, Current Version, and Latest Version to the parent
+            parent_item.appendRow(url_item)
+            parent_item.appendRow(curr_ver_item)
+            parent_item.appendRow(latest_ver_item)
+
+        model.setHeaderData(0, Qt.Horizontal, "Addons")
 
     @pyqtSlot(str, str, str)
     def show_message_box(self, message='', inform='', message_type='warn'):
