@@ -45,8 +45,22 @@ class Downloader(object):
                 # TODO: Fix downloading from curse-addons
             elif addon.addon_source.__contains__('curse-addons'):
                 url = addon.url
-                if not addon.url.endswith('/download'):
-                    url = addon.url + '/download'
+                identifier = '"download__link" href="'
+
+                if not url.endswith('/download'):
+                    url += '/download'
+                    logging.debug("URL to download: {0}".format(url))
+
+                url_grab_response = requests.get(url).content
+
+                start_ind = str(url_grab_response.decode("utf-8")).find(identifier) + len(identifier)
+                logging.debug("Start index: {0}".format(start_ind))
+
+                end_ind = str(url_grab_response.decode("utf-8")).find('"', start_ind)
+                logging.debug("End index: {0}".format(end_ind))
+                uri = str(url_grab_response.decode("utf-8"))[start_ind:end_ind]
+
+                url = 'https://www.curseforge.com' + uri
                 url_grab_response = requests.get(url)
 
             elif addon.addon_source.__contains__('tukui'):

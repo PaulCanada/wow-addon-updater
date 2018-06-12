@@ -212,6 +212,11 @@ class MainWindow(MainWindowPrompt):
             self.OutputUpdater.emit("Downloading files for {0} to {1}".format(item.name.title(),
                                                                                  os.path.abspath(d.zip_dir)))
             response, file_dir = d.download_from_url(item)
+
+            if file_dir == '':
+                self.OutputUpdater.emit("Download failed: bad URL.")
+                return False
+
             file_dir = os.path.abspath(file_dir)
             logging.info("Item: {0}".format(item.url))
             logging.debug("File to extract: {0}".format(file_dir))
