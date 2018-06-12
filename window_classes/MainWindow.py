@@ -142,7 +142,7 @@ class MainWindow(MainWindowPrompt):
         if update_list:
             self.OutputUpdater.emit("Addons out of date:")
             for addon in update_list:
-                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1}, \n\tNew version: {2}\n".format(addon.name.title(),
+                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name.title(),
                                                                                             addon.current_version,
                                                                                             addon.latest_version))
             message_box = QMessageBox.question(None, "Updates found.",
@@ -172,7 +172,10 @@ class MainWindow(MainWindowPrompt):
             self.OutputUpdater.emit("Downloading files for {0} to {1}".format(item.name.title(),
                                                                                  os.path.abspath(d.zip_dir)))
             response, file_dir = d.download_from_url(item)
+            file_dir = os.path.abspath(file_dir)
             logging.info("Item: {0}".format(item.url))
+            logging.debug("File to extract: {0}".format(file_dir))
+
             if response:
                 self.OutputUpdater.emit("Download complete.")
             else:
@@ -180,12 +183,28 @@ class MainWindow(MainWindowPrompt):
                 return False
 
             # Unzip the recently downloaded file
-            self.OutputUpdater.emit("Extracting files to {0}".format(os.path.abspath(file_dir)))
+            self.OutputUpdater.emit("Extracting files to {0}".format(file_dir))
             try:
                 zipper = zipfile.ZipFile(file_dir, 'r')
                 zipper.extractall(self.settings.data['settings']['wow_dir'] + '/' + item.name)
                 zipper.close()
                 self.OutputUpdater.emit("Extraction complete.")
+
+                # Set the addon's current version to the latest.
+                for key in self.settings.data['addons']:
+                    logging.debug("Key: {0}".format(str(key)))
+                    logging.debug("Item name: {0}".format(item.name))
+                    logging.debug("Transformed name: {0}".format(item.name.title().replace("-", " ").replace("_", " ")))
+                    logging.debug("Transformed key: {0}".format(key.title().replace("-", " ").replace("_", " ")))
+
+                    if str(key) == item.name:
+                        logging.debug("Addon found for key!")
+                        logging.debug("Item's latest version: {0}".format(item.latest_version))
+                        self.settings.data['addons'][key]['current_version'] = item.latest_version
+                        logging.debug("New current version: {0}".format(self.settings.data['addons'][key]['current_version']))
+
+                        self.settings.save_config()
+                        self.settings.load_config()
 
             except Exception as ze:
                 logging.critical("Error unzipping addon: {0}".format(ze))

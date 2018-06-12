@@ -85,18 +85,18 @@ class Addon(object):
 
             logging.info("URL name contains '/files'")
             logging.critical("File name before change: {0}".format(url))
-            self.url = url[:-6]
+            url = url[:-6]
             logging.info("New url: {0}".format(url))
 
         elif url.__contains__('tukui'):
             logging.info("URL from tukui found.")
             name = url[url.rfind("=") + 1:]
-            print("Name: {0}".format(name))
+            logging.debug("Name: {0}".format(name))
 
             return name
 
         name = url[url.rfind('/') + 1:]
-        logging.info(name)
+        logging.debug("Name: {0}".format(name))
         return name
 
     def get_website_type(self):
