@@ -34,13 +34,20 @@ class Downloader(object):
 
     def download_from_url(self, addon):
         logging.info("Attemtping to download file: {0}".format(addon.url))
+        logging.info("Addon source: {0}".format(addon.addon_source))
 
         try:
-            if addon.addon_source.__contains__('curse'):
+            if addon.addon_source.__contains__('curse-project'):
                 if addon.url.endswith("/files"):
                     logging.debug("Attempting to download a file that ends in '/files'.")
 
                 url_grab_response = requests.get(addon.url.replace("/files", "") + '/files/latest', stream=True)
+                # TODO: Fix downloading from curse-addons
+            elif addon.addon_source.__contains__('curse-addons'):
+                url = addon.url
+                if not addon.url.endswith('/download'):
+                    url = addon.url + '/download'
+                url_grab_response = requests.get(url)
 
             elif addon.addon_source.__contains__('tukui'):
                 uri = '/downloads/' + addon.url[addon.url.rfind("=") + 1:] + '-' + addon.latest_version + '.zip'
