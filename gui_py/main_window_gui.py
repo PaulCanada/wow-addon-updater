@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\main_window.ui'
+# Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -75,10 +75,13 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName("actionAbout")
         self.actionAddAddon = QtWidgets.QAction(MainWindow)
         self.actionAddAddon.setObjectName("actionAddAddon")
+        self.actionUpdateTreeView = QtWidgets.QAction(MainWindow)
+        self.actionUpdateTreeView.setObjectName("actionUpdateTreeView")
         self.menuFile.addAction(self.actionSettings)
         self.menuFile.addAction(self.actionAbout)
         self.menuFile.addAction(self.actionClose)
         self.menuAddon.addAction(self.actionAddAddon)
+        self.menuAddon.addAction(self.actionUpdateTreeView)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuAddon.menuAction())
 
@@ -97,6 +100,7 @@ class Ui_MainWindow(object):
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionAddAddon.setText(_translate("MainWindow", "Add Addon"))
+        self.actionUpdateTreeView.setText(_translate("MainWindow", "Update Tree View"))
 
 
 if __name__ == "__main__":

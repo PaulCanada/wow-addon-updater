@@ -120,6 +120,7 @@
      <string>Addon</string>
     </property>
     <addaction name="actionAddAddon"/>
+    <addaction name="actionUpdateTreeView"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAddon"/>
@@ -143,6 +144,11 @@
   <action name="actionAddAddon">
    <property name="text">
     <string>Add Addon</string>
+   </property>
+  </action>
+  <action name="actionUpdateTreeView">
+   <property name="text">
+    <string>Update Tree View</string>
    </property>
   </action>
  </widget>
