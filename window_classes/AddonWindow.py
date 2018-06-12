@@ -7,6 +7,7 @@ from Addon import Addon
 import logging
 from Worker import Worker
 
+supported_sites = ['curse-projects', 'curse-addons', 'tukui']
 
 class AddonWindow(QDialog):
 
@@ -28,6 +29,7 @@ class AddonWindow(QDialog):
 
     def add(self):
         print(self.window.ui.leditAddonUrl.text())
+        self.settings.load_config()
         try:
             response = requests.get(self.window.ui.leditAddonUrl.text())
 
@@ -52,12 +54,22 @@ class AddonWindow(QDialog):
             return False
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text())
+        logging.debug("Current addon source: {0}".format(current_addon.addon_source))
+        if current_addon.addon_source not in supported_sites:
+            self.MessageBox.emit("Host not supported",
+                                 "Downloading files from {0} is not currently supported.".format(current_addon.url),
+                                 "warn")
+            current_addon.valid_url = -1
 
-        if not current_addon.valid_url:
+        if current_addon.valid_url == -1:
+            return False
+        elif current_addon.valid_url is False:
             self.MessageBox.emit("Invalid URL",
                                  "Invalid WoW Addon URL. If you think this is a mistake, contact developer.",
                                  'critical')
             return False
+        else:
+            logging.debug("Valid URL.")
 
         logging.debug("Addon URL: {0}\nAddon name: {1}\nAddon version: {2}".format(current_addon.url,
                                                                                    current_addon.name,
@@ -83,6 +95,10 @@ class AddonWindow(QDialog):
 
             self.MessageBox.emit("Addon information added.", "", 'inform')
             self.window.ui.leditAddonUrl.setText("")
+
+            # Save and load the config.
+            self.settings.save_config()
+            self.settings.load_config()
             return True
 
     def check_if_addon_in_config(self, addon):
