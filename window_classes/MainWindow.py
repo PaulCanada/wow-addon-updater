@@ -117,8 +117,9 @@ class MainWindow(MainWindowPrompt):
         # TODO: Insert blank row indicating there are no addons.
         if len(tree_data) == 0:
             return
-        else:
-            model.clear()
+        if model.hasChildren():
+            model.removeRows(0, model.rowCount())
+
 
         for parent_name in tree_data:
             parent_item = QStandardItem(tree_data[parent_name]['name'])
