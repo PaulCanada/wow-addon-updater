@@ -37,9 +37,19 @@ class Downloader(object):
 
         try:
             if addon.addon_source.__contains__('curse'):
-                url_grab_response = requests.get(addon.url + '/files/latest', stream=True)
+                if addon.url.endswith("/files"):
+                    logging.debug("Attempting to download a file that ends in '/files'.")
+
+                url_grab_response = requests.get(addon.url.replace("/files", "") + '/files/latest', stream=True)
+
+            elif addon.addon_source.__contains__('tukui'):
+                uri = '/downloads/' + addon.url[addon.url.rfind("=") + 1:] + '-' + addon.latest_version + '.zip'
+                url = addon.url[:addon.url.find("/download")] + uri
+                logging.debug("Tukui url: {0}".format(url))
+                url_grab_response = requests.get(url)
+
             else:
-                logging.critical("Only mods found from Curse forge are supported at this time.")
+                logging.critical("Only mods found from Curse forge and Tukui are supported at this time.")
                 return False
 
             logging.debug("URL Reponse: {0}".format(url_grab_response))
