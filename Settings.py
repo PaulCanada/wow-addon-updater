@@ -27,8 +27,8 @@ class Settings(object):
             logging.info("Creating config.json file.")
             self.save_config()
 
-        if 'wow_dir' not in self.data:
-            self.data['wow_dir'] = ""
+        if 'wow_dir' not in self.data['settings']:
+            self.data['settings']['wow_dir'] = ""
 
         if 'addons' not in self.data:
             self.data['addons'] = ""
