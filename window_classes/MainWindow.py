@@ -157,10 +157,11 @@ class MainWindow(MainWindowPrompt):
     def execute_check_updates(self):
 
         if self.settings.data['settings']['wow_dir'] == '':
+            self.OpenSettingsWindow.emit()
+
             self.MessageBox.emit("Addons directory not found",
-                                 "Please specify the directory where you want the addons to be downloaded to from "
-                                 "'File' -> 'Settings'."
-                                 "This is usually 'World of Warcraft/Addons'.", 'inform')
+                                 "Please specify the directory where you want the addons to be downloaded to."
+                                 "\n\nThis is usually: 'World of Warcraft/Interface/AddOns'.\n", 'inform')
             return
 
         if len(self.settings.data['addons']) == 0:
