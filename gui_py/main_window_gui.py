@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\main_window.ui'
+# Form implementation generated from reading ui file 'main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -36,6 +36,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3 = QtWidgets.QGridLayout(self.frameAddons)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.tviewAddons = QtWidgets.QTreeView(self.frameAddons)
+        self.tviewAddons.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tviewAddons.setObjectName("tviewAddons")
         self.gridLayout_3.addWidget(self.tviewAddons, 1, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.frameAddons)
