@@ -27,6 +27,12 @@ class Settings(object):
             logging.info("Creating config.json file.")
             self.save_config()
 
+        if 'wow_dir' not in self.data:
+            self.data['wow_dir'] = ""
+
+        if 'addons' not in self.data:
+            self.data['addons'] = ""
+
     def write_addon_info(self, primary_key, key, info):
         self.data[primary_key][key] = info
 
