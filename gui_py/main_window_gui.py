@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main_window.ui'
+# Form implementation generated from reading ui file '.\main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -55,6 +55,12 @@ class Ui_MainWindow(object):
         self.btnCheckForUpdates.setMinimumSize(QtCore.QSize(0, 40))
         self.btnCheckForUpdates.setObjectName("btnCheckForUpdates")
         self.gridLayout.addWidget(self.btnCheckForUpdates, 2, 0, 1, 2)
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setEnabled(True)
+        self.progressBar.setMinimumSize(QtCore.QSize(300, 0))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
+        self.gridLayout.addWidget(self.progressBar, 3, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -94,6 +100,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
         self.btnCheckForUpdates.setText(_translate("MainWindow", "Check For Updates"))
+        self.progressBar.setFormat(_translate("MainWindow", "%v/%m"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuAddon.setTitle(_translate("MainWindow", "Addon"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
