@@ -4,7 +4,6 @@ import logging
 from Addon import Addon
 import zipfile
 
-logging.basicConfig(level=logging.INFO)
 test_url_a = "https://wow.curseforge.com/projects/deadly-boss-mods"
 test_url_b = "https://www.curseforge.com/wow/addons/file"
 test_url_c = "https://www.tukui.org/download.php?ui=elvui"

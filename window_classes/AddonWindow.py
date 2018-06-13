@@ -9,6 +9,7 @@ from Worker import Worker
 
 supported_sites = ['curse-projects', 'curse-addons', 'tukui']
 
+
 class AddonWindow(QDialog):
 
     MessageBox = pyqtSignal(str, str, str)

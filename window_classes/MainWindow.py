@@ -6,26 +6,12 @@ from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
 import sys
-import os
-import zipfile
-from PyQt5.QtWidgets import QTreeView
 from Worker import Worker
 from Settings import Settings
 from Downloader import Downloader
 from UpdateChecker import UpdateChecker
 from overrides.internal_overrides import MainWindowPrompt
 import logging
-
-sys._excepthook = sys.excepthook
-logging.basicConfig(level=logging.INFO)
-
-
-def exception_hook(exctype, value, traceback):
-    sys._excepthook(exctype, value, traceback)
-    sys.exit(1)
-
-
-sys.excepthook = exception_hook
 
 HANDLE_STYLE = """
 QSplitter::handle:horizontal {
@@ -55,8 +41,6 @@ class MainWindow(MainWindowPrompt):
         UpdateTreeView = pyqtSignal()
         UpdateProgressBarValue = pyqtSignal(int)
         UpdateProgressBarMax = pyqtSignal(int)
-
-        # settings = Settings()
 
     except Exception as e:
         print(e)
