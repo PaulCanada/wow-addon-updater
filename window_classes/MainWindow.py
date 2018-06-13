@@ -170,9 +170,16 @@ class MainWindow(MainWindowPrompt):
                                  "warn")
             return
 
+        self.window.ui.btnCheckForUpdates.setText("Checking {0} Addons For Updates...".format(
+            len(self.settings.data['addons'])))
+        self.window.ui.btnCheckForUpdates.setDisabled(True)
         self.OutputUpdater.emit("Checking for updates...")
+
         updater = UpdateChecker(self)
         update_list = updater.check_for_updates()
+
+        self.window.ui.btnCheckForUpdates.setText("Check For Updates")
+        self.window.ui.btnCheckForUpdates.setEnabled(True)
 
         self.PromptUpdate.emit(update_list)
 
