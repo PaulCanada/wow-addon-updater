@@ -12,6 +12,7 @@ class Settings(object):
         self.initialize_data()
         self.files_to_update = []
         self.load_config()
+        self.check_retro()
 
     def initialize_data(self):
         if not os.path.isdir('./config'):
@@ -27,11 +28,17 @@ class Settings(object):
             logging.info("Creating config.json file.")
             self.save_config()
 
+    def check_retro(self):
+        if 'settings' not in self.data:
+            self.data['settings'] = {}
+
         if 'wow_dir' not in self.data['settings']:
             self.data['settings']['wow_dir'] = ""
+            self.save_config()
 
         if 'addons' not in self.data:
             self.data['addons'] = ""
+            self.save_config()
 
     def write_addon_info(self, primary_key, key, info):
         self.data[primary_key][key] = info
