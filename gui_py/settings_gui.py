@@ -13,6 +13,9 @@ class Ui_Settings(object):
         Settings.setObjectName("Settings")
         Settings.resize(400, 342)
         Settings.setMinimumSize(QtCore.QSize(0, 0))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/app/icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Settings.setWindowIcon(icon)
         self.formLayout_2 = QtWidgets.QFormLayout(Settings)
         self.formLayout_2.setObjectName("formLayout_2")
         self.frame = QtWidgets.QFrame(Settings)
@@ -58,6 +61,7 @@ class Ui_Settings(object):
         self.pushButton.setText(_translate("Settings", "Browse..."))
         self.btnApply.setText(_translate("Settings", "Apply"))
 
+import icons_rc
 
 if __name__ == "__main__":
     import sys

@@ -12,6 +12,9 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(589, 88)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/app/icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Form.setWindowIcon(icon)
         self.formLayout = QtWidgets.QFormLayout(Form)
         self.formLayout.setObjectName("formLayout")
         self.lblAddonUrl = QtWidgets.QLabel(Form)
@@ -35,6 +38,7 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.lblAddonUrl.setText(_translate("Form", "Addon URL:"))
 
+import icons_rc
 
 if __name__ == "__main__":
     import sys

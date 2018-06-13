@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Wow Addon Updater</string>
+   <string>WoW Addon Updater</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/icons.qrc">
+    <normaloff>:/app/icon.ico</normaloff>:/app/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -171,6 +175,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../qrc/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

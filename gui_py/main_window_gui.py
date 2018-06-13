@@ -12,6 +12,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 634)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/app/icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -96,7 +99,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Wow Addon Updater"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "WoW Addon Updater"))
         self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
         self.btnCheckForUpdates.setText(_translate("MainWindow", "Check For Updates"))
@@ -109,6 +112,7 @@ class Ui_MainWindow(object):
         self.actionAddAddon.setText(_translate("MainWindow", "Add Addon"))
         self.actionUpdateTreeView.setText(_translate("MainWindow", "Update Tree View"))
 
+import icons_rc
 
 if __name__ == "__main__":
     import sys
