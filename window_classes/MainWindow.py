@@ -1,11 +1,12 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.Qt import Qt
+from PyQt5.Qt import QModelIndex, QUrl, QTextFormat
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
 import sys
+from Addon import Addon
 from Worker import Worker
 from Settings import Settings
 from Downloader import Downloader
@@ -39,6 +40,7 @@ class MainWindow(MainWindowPrompt):
         DownloadStart = pyqtSignal()
         MessageBox = pyqtSignal(str, str, str)
         UpdateTreeView = pyqtSignal()
+        AddAddon = pyqtSignal(Addon, QTreeView, QStandardItemModel)
         UpdateProgressBarValue = pyqtSignal(int)
         UpdateProgressBarMax = pyqtSignal(int)
 
@@ -55,6 +57,10 @@ class MainWindow(MainWindowPrompt):
 
         self.download_worker = Worker(self.execute_download)
         self.update_worker = Worker(self.execute_check_updates)
+
+        self.tree_model = self.window.ui.tviewAddons
+        self.model = QStandardItemModel(self.tree_model)
+
         self.init_ui()
 
     def init_ui(self):
@@ -67,6 +73,7 @@ class MainWindow(MainWindowPrompt):
         self.DownloadStart.connect(self.execute_download)
         self.MessageBox.connect(self.show_message_box)
         self.UpdateTreeView.connect(self.update_tree_view)
+        self.AddAddon.connect(self.add_addon_to_tree_view)
         self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
 
@@ -78,6 +85,9 @@ class MainWindow(MainWindowPrompt):
         self.UpdateProgressBarMax.emit(10)
         self.UpdateProgressBarValue.emit(0)
         self.window.ui.progressBar.setVisible(False)
+
+        # Setting the header to hidden removes the drag bar for column width resizing.
+        # self.window.ui.tviewAddons.setHeaderHidden(True)
 
         self.UpdateTreeView.emit()
 
@@ -104,12 +114,48 @@ class MainWindow(MainWindowPrompt):
     def set_progress_bar_max(self, val):
         self.window.ui.progressBar.setMaximum(val)
 
-    @pyqtSlot()
-    def update_tree_view(self):
-        tree_model = self.window.ui.tviewAddons
-        model = QStandardItemModel(tree_model)
+    @pyqtSlot(Addon, QTreeView, QStandardItemModel)
+    def add_addon_to_tree_view(self, addon, tree_model, model):
+        addon.name = addon.name.title()
+
         tree_model.setModel(model)
 
+        parent_item = QStandardItem(addon.name)
+        col1 = QStandardItem()
+
+        url_item = QStandardItem()
+
+        # Create a QLabel to allow following hyperlinks in the table.
+        url_label = QLabel()
+        url_label.setTextFormat(1)
+        url_label.setOpenExternalLinks(True)
+        url_text = "<a href=\"" + addon.url + "\">" + addon.name + "</a>"
+        url_label.setText(url_text)
+
+        curr_ver_item = QStandardItem(addon.current_version)
+        latest_ver_item = QStandardItem(addon.latest_version)
+
+        logging.debug("Parent item: {0}".format(addon.name))
+
+        model.appendRow([parent_item, col1])
+
+        url_item_identifier = QStandardItem("Addon Link: ")
+        curr_ver_item_identifier = QStandardItem("Current Version: ")
+        latest_ver_item_identifier = QStandardItem("Latest Version: ")
+
+        # Append URL, Current Version, and Latest Version to the parent
+        parent_item.appendRow([url_item_identifier, url_item])
+
+        # Append URL as a QLabel to allow the hyperlink to be clicked on.
+        self.window.ui.tviewAddons.setIndexWidget(url_item.index(), url_label)
+
+        parent_item.appendRow([curr_ver_item_identifier, curr_ver_item])
+        parent_item.appendRow([latest_ver_item_identifier, latest_ver_item])
+
+        self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
+
+    @pyqtSlot()
+    def update_tree_view(self):
         tree_data = self.settings.data['addons']
         logging.debug("Tree view data: {0}".format(tree_data))
 
@@ -117,25 +163,18 @@ class MainWindow(MainWindowPrompt):
         # TODO: Insert blank row indicating there are no addons.
         if len(tree_data) == 0:
             return
-        if model.hasChildren():
-            model.removeRows(0, model.rowCount())
+        if self.model.hasChildren():
+            self.model.removeRows(0, self.model.rowCount())
 
         for parent_name in tree_data:
-            parent_item = QStandardItem(tree_data[parent_name]['name'])
-            url_item = QStandardItem("Addon Link: {0}".format(tree_data[parent_name]['url']))
-            curr_ver_item = QStandardItem("Current Version: {0}".format(tree_data[parent_name]['current_version']))
-            latest_ver_item = QStandardItem("Latest Version:    {0}".format(tree_data[parent_name]['latest_version']))
+            current_addon = Addon(tree_data[parent_name]['url'], tree_data[parent_name]['name'],
+                                  tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'])
 
-            logging.debug("Parent item: {0}".format(parent_name))
+            self.AddAddon.emit(current_addon, self.tree_model, self.model)
 
-            model.appendRow(parent_item)
-
-            # Append URL, Current Version, and Latest Version to the parent
-            parent_item.appendRow(url_item)
-            parent_item.appendRow(curr_ver_item)
-            parent_item.appendRow(latest_ver_item)
-
-        model.setHeaderData(0, Qt.Horizontal, "Addons")
+        # Comment out header as I don't like the look at the moment.
+        self.model.setHeaderData(0, 0x01, "")
+        self.model.setHeaderData(1, 0x01, "")
 
     @pyqtSlot(str, str, str)
     def show_message_box(self, message='', inform='', message_type='warn'):
