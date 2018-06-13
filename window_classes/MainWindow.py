@@ -53,6 +53,8 @@ class MainWindow(MainWindowPrompt):
         DownloadStart = pyqtSignal()
         MessageBox = pyqtSignal(str, str, str)
         UpdateTreeView = pyqtSignal()
+        UpdateProgressBarValue = pyqtSignal(int)
+        UpdateProgressBarMax = pyqtSignal(int)
 
         # settings = Settings()
 
@@ -81,11 +83,17 @@ class MainWindow(MainWindowPrompt):
         self.DownloadStart.connect(self.execute_download)
         self.MessageBox.connect(self.show_message_box)
         self.UpdateTreeView.connect(self.update_tree_view)
+        self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
+        self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
         self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
+
+        self.UpdateProgressBarMax.emit(10)
+        self.UpdateProgressBarValue.emit(0)
+        self.window.ui.progressBar.setVisible(False)
 
         self.UpdateTreeView.emit()
 
@@ -104,6 +112,14 @@ class MainWindow(MainWindowPrompt):
         settings_window = SettingsWindow(self)
         settings_window.exec()
 
+    @pyqtSlot(int)
+    def set_progress_bar_value(self, val):
+        self.window.ui.progressBar.setValue(val)
+
+    @pyqtSlot(int)
+    def set_progress_bar_max(self, val):
+        self.window.ui.progressBar.setMaximum(val)
+
     @pyqtSlot()
     def update_tree_view(self):
         tree_model = self.window.ui.tviewAddons
@@ -119,7 +135,6 @@ class MainWindow(MainWindowPrompt):
             return
         if model.hasChildren():
             model.removeRows(0, model.rowCount())
-
 
         for parent_name in tree_data:
             parent_item = QStandardItem(tree_data[parent_name]['name'])
