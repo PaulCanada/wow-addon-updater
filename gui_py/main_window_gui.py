@@ -12,6 +12,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 634)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/app/icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -55,6 +58,12 @@ class Ui_MainWindow(object):
         self.btnCheckForUpdates.setMinimumSize(QtCore.QSize(0, 40))
         self.btnCheckForUpdates.setObjectName("btnCheckForUpdates")
         self.gridLayout.addWidget(self.btnCheckForUpdates, 2, 0, 1, 2)
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setEnabled(True)
+        self.progressBar.setMinimumSize(QtCore.QSize(300, 0))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
+        self.gridLayout.addWidget(self.progressBar, 3, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -75,10 +84,13 @@ class Ui_MainWindow(object):
         self.actionAbout.setObjectName("actionAbout")
         self.actionAddAddon = QtWidgets.QAction(MainWindow)
         self.actionAddAddon.setObjectName("actionAddAddon")
+        self.actionUpdateTreeView = QtWidgets.QAction(MainWindow)
+        self.actionUpdateTreeView.setObjectName("actionUpdateTreeView")
         self.menuFile.addAction(self.actionSettings)
         self.menuFile.addAction(self.actionAbout)
         self.menuFile.addAction(self.actionClose)
         self.menuAddon.addAction(self.actionAddAddon)
+        self.menuAddon.addAction(self.actionUpdateTreeView)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuAddon.menuAction())
 
@@ -87,17 +99,20 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Wow Addon Updater"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "WoW Addon Updater"))
         self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
         self.btnCheckForUpdates.setText(_translate("MainWindow", "Check For Updates"))
+        self.progressBar.setFormat(_translate("MainWindow", "%v/%m"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuAddon.setTitle(_translate("MainWindow", "Addon"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionAddAddon.setText(_translate("MainWindow", "Add Addon"))
+        self.actionUpdateTreeView.setText(_translate("MainWindow", "Update Tree View"))
 
+import icons_rc
 
 if __name__ == "__main__":
     import sys

@@ -1,9 +1,7 @@
 import simplejson
 import os
-import sys
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
 config_path = './config/addons.json'
 
 
@@ -27,11 +25,15 @@ class Settings(object):
             self.data['addons'] = {}
 
             logging.info("Creating config.json file.")
-            with(open(config_path, 'w')) as f:
-                f.write(simplejson.dumps(self.data, indent=4, ensure_ascii=True))
+            self.save_config()
+
+        if 'wow_dir' not in self.data:
+            self.data['wow_dir'] = ""
+
+        if 'addons' not in self.data:
+            self.data['addons'] = ""
 
     def write_addon_info(self, primary_key, key, info):
-        # self.data.get('addons').append({key: info})
         self.data[primary_key][key] = info
 
     def load_config(self):
@@ -43,10 +45,6 @@ class Settings(object):
             f.write(simplejson.dumps(self.data, indent=4, ensure_ascii=True))
 
     def get_settings_keys(self):
-
-        if 'raiderio' in self.data['addons']:
-            print("DdddFGD")
-
         for key in self.data['addons']:
             print(key)
 

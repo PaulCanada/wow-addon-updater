@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/icons.qrc">
+    <normaloff>:/app/icon.ico</normaloff>:/app/icon.ico</iconset>
+  </property>
   <layout class="QFormLayout" name="formLayout_2">
    <item row="0" column="0" colspan="2">
     <widget class="QFrame" name="frame">
@@ -81,6 +85,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../qrc/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

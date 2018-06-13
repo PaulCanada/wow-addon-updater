@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 class Addon(object):
 
     curse_project_locator = 'data-name='
-    curse_addon_locator = 'file__name full'
+    curse_addon_locator = 'file__name full">'
     tukui_locator = 'downloads/elvui-'
 
     def __init__(self, url='', name='', current_version='', latest_version=''):
@@ -67,6 +67,10 @@ class Addon(object):
         if web_type == self.tukui_locator:
             end_ind = content.find(".zip", start_ind + len(web_type))
             version = content[start_ind + len(web_type):end_ind]
+        elif web_type == self.curse_addon_locator:
+            start_ind = content.find(web_type) + len(web_type)
+            end_ind = content.find("<", start_ind)
+            version = content[start_ind:end_ind]
         else:
             end_ind = content.find(">", start_ind)
             version = content[start_ind + len(web_type):end_ind].strip("\"")
