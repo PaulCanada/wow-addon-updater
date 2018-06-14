@@ -129,7 +129,7 @@ class MainWindow(MainWindowPrompt):
         url_label = QLabel()
         url_label.setTextFormat(1)
         url_label.setOpenExternalLinks(True)
-        url_text = "<a href=\"" + addon.url + "\">" + addon.name + "</a>"
+        url_text = "<a href=\"" + addon.url + "\"> " + addon.name + "</a>"
         url_label.setText(url_text)
 
         curr_ver_item = QStandardItem(addon.current_version)
@@ -154,6 +154,10 @@ class MainWindow(MainWindowPrompt):
 
         self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
+        # Comment out header as I don't like the look at the moment.
+        self.model.setHeaderData(0, 0x01, "")
+        self.model.setHeaderData(1, 0x01, "")
+
     @pyqtSlot()
     def update_tree_view(self):
         tree_data = self.settings.data['addons']
@@ -171,10 +175,6 @@ class MainWindow(MainWindowPrompt):
                                   tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'])
 
             self.AddAddon.emit(current_addon, self.tree_model, self.model)
-
-        # Comment out header as I don't like the look at the moment.
-        self.model.setHeaderData(0, 0x01, "")
-        self.model.setHeaderData(1, 0x01, "")
 
     @pyqtSlot(str, str, str)
     def show_message_box(self, message='', inform='', message_type='warn'):
