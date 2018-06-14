@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'settings.ui'
+# Form implementation generated from reading ui file '.\settings.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -39,6 +39,11 @@ class Ui_Settings(object):
         self.btnBrowseWowDirectory = QtWidgets.QPushButton(self.frame)
         self.btnBrowseWowDirectory.setObjectName("btnBrowseWowDirectory")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.btnBrowseWowDirectory)
+        self.cboxPromptToClose = QtWidgets.QCheckBox(self.frame)
+        self.cboxPromptToClose.setObjectName("cboxPromptToClose")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.cboxPromptToClose)
+        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.formLayout.setItem(2, QtWidgets.QFormLayout.LabelRole, spacerItem)
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.frame)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -59,6 +64,7 @@ class Ui_Settings(object):
         Settings.setWindowTitle(_translate("Settings", "Settings"))
         self.lblWowDirectory.setText(_translate("Settings", "WoW Directory:"))
         self.btnBrowseWowDirectory.setText(_translate("Settings", "Browse..."))
+        self.cboxPromptToClose.setText(_translate("Settings", "Prompt to close on application exit"))
         self.btnApply.setText(_translate("Settings", "Apply"))
 
 import icons_rc
