@@ -22,6 +22,7 @@ class Downloader(object):
     def __init__(self, parent):
         self.parent = parent
         self.zip_dir = './downloaded_archives'
+        self.check_zip_dir()
 
     def check_zip_dir(self):
         if not os.path.isdir(self.zip_dir):
@@ -29,8 +30,8 @@ class Downloader(object):
 
     def update_addon(self, addon):
         self.parent.OutputUpdater.emit("Downloading files for {0} to {1}".format(addon.name.title(),
-                                                                                 os.path.abspath(d.zip_dir)))
-        response, file_dir = d.download_from_url(addon)
+                                                                                 os.path.abspath(self.zip_dir)))
+        response, file_dir = self.download_from_url(addon)
 
         if file_dir == '':
             self.parent.OutputUpdater.emit("Download failed: bad URL.")

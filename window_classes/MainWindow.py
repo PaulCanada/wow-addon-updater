@@ -250,7 +250,7 @@ class MainWindow(MainWindowPrompt):
 
     @pyqtSlot()
     def execute_download(self):
-        d = Downloader(self.settings)
+        d = Downloader(self)
         to_update = self.settings.files_to_update
         logging.info("Update list: {0}".format(to_update))
 
