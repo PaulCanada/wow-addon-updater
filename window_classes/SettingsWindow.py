@@ -38,12 +38,12 @@ class SettingsWindow(QDialog):
         self.close()
 
     def set_wow_dir(self, settings):
-        file_name = open_file_dialog("Browse for World of Warcraft Game Directory")
+        file_name = open_file_dialog("Browse for World of Warcraft AddOns Directory")
 
         if file_name is not None:
 
-            if str(file_name).endswith("/AddOn"):
-                file_name.strip("/AddOn")
+            if not str(file_name).endswith("/AddOns"):
+                file_name += '/AddOns'
 
             self.window.ui.leditWowDirectory.setText(file_name)
             settings.data['settings']['wow_dir'] = file_name
