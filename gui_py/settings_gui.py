@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\settings.ui'
+# Form implementation generated from reading ui file 'settings.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -36,9 +36,9 @@ class Ui_Settings(object):
         self.leditWowDirectory = QtWidgets.QLineEdit(self.frame)
         self.leditWowDirectory.setObjectName("leditWowDirectory")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.leditWowDirectory)
-        self.pushButton = QtWidgets.QPushButton(self.frame)
-        self.pushButton.setObjectName("pushButton")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.pushButton)
+        self.btnBrowseWowDirectory = QtWidgets.QPushButton(self.frame)
+        self.btnBrowseWowDirectory.setObjectName("btnBrowseWowDirectory")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.btnBrowseWowDirectory)
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.frame)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -58,7 +58,7 @@ class Ui_Settings(object):
         _translate = QtCore.QCoreApplication.translate
         Settings.setWindowTitle(_translate("Settings", "Settings"))
         self.lblWowDirectory.setText(_translate("Settings", "WoW Directory:"))
-        self.pushButton.setText(_translate("Settings", "Browse..."))
+        self.btnBrowseWowDirectory.setText(_translate("Settings", "Browse..."))
         self.btnApply.setText(_translate("Settings", "Apply"))
 
 import icons_rc
