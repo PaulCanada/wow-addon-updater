@@ -2,7 +2,7 @@ import simplejson
 import os
 import logging
 
-config_path = './config/addons.json'
+config_path = './config/config.json'
 
 
 class Settings(object):
