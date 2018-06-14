@@ -54,7 +54,7 @@ class AddonWindow(QDialog):
                 self.window.ui.leditAddonUrl.text(), 'critical'))
             return False
 
-        current_addon = Addon(url=self.window.ui.leditAddonUrl.text())
+        current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
         logging.debug("Current addon source: {0}".format(current_addon.addon_source))
         if current_addon.addon_source not in supported_sites:
             self.MessageBox.emit("Host not supported",
@@ -100,7 +100,7 @@ class AddonWindow(QDialog):
             # Save and load the config.
             self.settings.save_config()
             self.settings.load_config()
-            self.parent.AddAddon.emit(current_addon)
+            self.parent.AddAddon.emit(current_addon, self.parent.window.ui.tviewAddons, self.parent.model)
             return True
 
     def check_if_addon_in_config(self, addon):
