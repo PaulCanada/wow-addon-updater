@@ -30,7 +30,7 @@ background: #ccc;
 """
 
 
-class MainWindow(MainWindowPrompt):
+class MainWindow(QMainWindow):
 
     try:
         OpenAddonAdder = pyqtSignal()
@@ -48,11 +48,13 @@ class MainWindow(MainWindowPrompt):
         print(e)
 
     def __init__(self):
-        super(MainWindowPrompt, self).__init__()
+        super(QMainWindow, self).__init__()
 
         self.window = QMainWindow()
         self.window.ui = Ui_MainWindow()
         self.window.ui.setupUi(self)
+        self.app = QApplication(sys.argv)
+
         self.settings = Settings()
 
         self.download_worker = Worker(self.execute_download)
@@ -62,6 +64,16 @@ class MainWindow(MainWindowPrompt):
         self.model = QStandardItemModel(self.tree_model)
 
         self.init_ui()
+
+    def closeEvent(self, event):
+        if self.settings.data['settings']['prompt_to_close']:
+            prompt = QMessageBox.question(self, 'Are you sure you want to quit?', 'Task is in progress !',
+                                          QMessageBox.Yes, QMessageBox.No)
+
+            if prompt == QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()
 
     def init_ui(self):
         self.window.ui.splitter.setStyleSheet(HANDLE_STYLE)
@@ -90,6 +102,8 @@ class MainWindow(MainWindowPrompt):
         # self.window.ui.tviewAddons.setHeaderHidden(True)
 
         self.UpdateTreeView.emit()
+
+        self.settings.check_for_wow_directory(self)
 
     @pyqtSlot()
     def add_addon(self):
@@ -195,12 +209,7 @@ class MainWindow(MainWindowPrompt):
 
     def execute_check_updates(self):
 
-        if self.settings.data['settings']['wow_dir'] == '':
-            self.OpenSettingsWindow.emit()
-
-            self.MessageBox.emit("Addons directory not found",
-                                 "Please specify the directory where you want the addons to be downloaded to."
-                                 "\n\nThis is usually: 'World of Warcraft/Interface/AddOns'.\n", 'inform')
+        if not self.settings.check_for_wow_directory(self):
             return
 
         if len(self.settings.data['addons']) == 0:
