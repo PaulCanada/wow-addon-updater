@@ -1,6 +1,7 @@
 from gui_py.settings_gui import Ui_Settings
 from PyQt5.QtWidgets import QDialog, QFileDialog
 import logging
+import os
 
 
 class SettingsWindow(QDialog):
@@ -42,11 +43,22 @@ class SettingsWindow(QDialog):
 
         if file_name is not None:
 
-            if not str(file_name).endswith("/AddOns"):
-                file_name += '/AddOns'
+            if not str(file_name).endswith('/Interface/AddOns'):
 
-            self.window.ui.leditWowDirectory.setText(file_name)
-            settings.data['settings']['wow_dir'] = file_name
+                if str(file_name).endswith('/Interface'):
+                    file_name += '/AddOns'
+                else:
+                    file_name += '/Interface/AddOns'
+
+        if not os.path.isdir(os.path.abspath(file_name)):
+            self.parent.MessageBox.emit("Could not verify AddOns directoy.",
+                                        "{0} does not seem to be a valid WoW directory. Please verify WoW AddOns "
+                                        "directory.".format(file_name.strip('/Interface/AddOns')), "warn")
+
+            return
+
+        self.window.ui.leditWowDirectory.setText(file_name)
+        settings.data['settings']['wow_dir'] = file_name
 
 
 def open_file_dialog(title):
