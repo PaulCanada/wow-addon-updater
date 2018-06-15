@@ -52,8 +52,8 @@ class SettingsWindow(QDialog):
 
         if not os.path.isdir(os.path.abspath(file_name)):
             self.parent.MessageBox.emit("Could not verify AddOns directoy.",
-                                        "{0} does not seem to be a valid WoW directory. Please verify WoW "
-                                        "AddOns directory.".format(file_name.strip('/Interface/AddOns')), "warn")
+                                        "{0} does not seem to be a valid WoW directory. Please verify WoW AddOns "
+                                        "directory.".format(file_name.strip('/Interface/AddOns')), "warn")
 
             return
 
