@@ -38,6 +38,8 @@ class Settings(object):
 
             return False
 
+        return True
+
     def check_retro(self):
         if 'settings' not in self.data:
             self.data['settings'] = {}
