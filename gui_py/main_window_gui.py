@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main_window.ui'
+# Form implementation generated from reading ui file '.\main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,6 +19,16 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setEnabled(True)
+        self.progressBar.setMinimumSize(QtCore.QSize(300, 0))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
+        self.gridLayout.addWidget(self.progressBar, 4, 0, 1, 1)
+        self.btnCheckForUpdates = QtWidgets.QPushButton(self.centralwidget)
+        self.btnCheckForUpdates.setMinimumSize(QtCore.QSize(0, 40))
+        self.btnCheckForUpdates.setObjectName("btnCheckForUpdates")
+        self.gridLayout.addWidget(self.btnCheckForUpdates, 3, 0, 1, 2)
         self.splitter = QtWidgets.QSplitter(self.centralwidget)
         self.splitter.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.splitter.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -55,16 +65,10 @@ class Ui_MainWindow(object):
         self.lblOutput.setObjectName("lblOutput")
         self.gridLayout_2.addWidget(self.lblOutput, 0, 0, 1, 1)
         self.gridLayout.addWidget(self.splitter, 1, 0, 1, 2)
-        self.btnCheckForUpdates = QtWidgets.QPushButton(self.centralwidget)
-        self.btnCheckForUpdates.setMinimumSize(QtCore.QSize(0, 40))
-        self.btnCheckForUpdates.setObjectName("btnCheckForUpdates")
-        self.gridLayout.addWidget(self.btnCheckForUpdates, 2, 0, 1, 2)
-        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
-        self.progressBar.setEnabled(True)
-        self.progressBar.setMinimumSize(QtCore.QSize(300, 0))
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName("progressBar")
-        self.gridLayout.addWidget(self.progressBar, 3, 0, 1, 1)
+        self.btnRemoveAddon = QtWidgets.QPushButton(self.centralwidget)
+        self.btnRemoveAddon.setMinimumSize(QtCore.QSize(0, 40))
+        self.btnRemoveAddon.setObjectName("btnRemoveAddon")
+        self.gridLayout.addWidget(self.btnRemoveAddon, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -101,10 +105,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "WoW Addon Updater"))
+        self.progressBar.setFormat(_translate("MainWindow", "%v/%m"))
+        self.btnCheckForUpdates.setText(_translate("MainWindow", "Check For Updates"))
         self.label.setText(_translate("MainWindow", "Addons"))
         self.lblOutput.setText(_translate("MainWindow", "Output"))
-        self.btnCheckForUpdates.setText(_translate("MainWindow", "Check For Updates"))
-        self.progressBar.setFormat(_translate("MainWindow", "%v/%m"))
+        self.btnRemoveAddon.setText(_translate("MainWindow", "Remove Addon"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuAddon.setTitle(_translate("MainWindow", "Addon"))
         self.actionClose.setText(_translate("MainWindow", "Close"))
