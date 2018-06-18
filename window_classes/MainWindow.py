@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(Addon, QTreeView, QStandardItemModel)
     def add_addon_to_tree_view(self, addon, tree_model, model):
-        addon.name = addon.name.title()
+        addon.name = addon.name
 
         tree_model.setModel(model)
 
@@ -237,7 +237,7 @@ class MainWindow(QMainWindow):
         if update_list:
             self.OutputUpdater.emit("Addons out of date:")
             for addon in update_list:
-                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name.title(),
+                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name,
                                                                                             addon.current_version,
                                                                                             addon.latest_version))
             message_box = QMessageBox.question(None, "Updates found.",

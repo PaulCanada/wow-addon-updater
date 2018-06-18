@@ -85,7 +85,7 @@ class AddonWindow(QDialog):
             return False
         else:
             logging.debug("Addon is not in list. Adding addon: {0}".format(current_addon.name))
-            addon_dict = {'name': current_addon.name.title().replace("-", " ").replace("_", " "),
+            addon_dict = {'name': current_addon.name,
                           'url': current_addon.url,
                           'current_version': 'Unknown',
                           'latest_version': current_addon.latest_version}
