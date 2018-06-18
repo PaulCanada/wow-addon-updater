@@ -80,35 +80,6 @@ class Addon(object):
 
         return version
 
-    def get_name_old(self):
-        """
-        Deprecated. Do not use as method below is better and grabs actual name from the site.
-
-        :return:
-        """
-        url = self.url
-        print("URL: {0}".format(url))
-        if url.__contains__('/files'):
-            if not url.endswith('/files'):
-                logging.critical("Bad URL.")
-                return False
-
-            logging.info("URL name contains '/files'")
-            logging.critical("File name before change: {0}".format(url))
-            url = url[:-6]
-            logging.info("New url: {0}".format(url))
-
-        elif url.__contains__('tukui'):
-            logging.info("URL from tukui found.")
-            name = url[url.rfind("=") + 1:]
-            logging.debug("Name: {0}".format(name))
-
-            return name
-
-        name = url[url.rfind('/') + 1:]
-        logging.debug("Name: {0}".format(name))
-        return name
-
     def get_name(self):
         url = self.url
 
