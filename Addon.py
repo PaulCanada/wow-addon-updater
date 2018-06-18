@@ -62,7 +62,7 @@ class Addon(object):
 
         content = str(page.content)
         logging.debug("Content of page: {0}".format(content))
-        start_ind = content.rfind(web_type)
+        start_ind = content.find(web_type)
 
         if web_type == self.tukui_locator:
             end_ind = content.find(".zip", start_ind + len(web_type))
@@ -72,6 +72,7 @@ class Addon(object):
             end_ind = content.find("<", start_ind)
             version = content[start_ind:end_ind]
         else:
+            start_ind = content.find(web_type, start_ind + 1)
             end_ind = content.find(">", start_ind)
             version = content[start_ind + len(web_type):end_ind].strip("\"")
 
@@ -79,7 +80,12 @@ class Addon(object):
 
         return version
 
-    def get_name(self):
+    def get_name_old(self):
+        """
+        Deprecated. Do not use as method below is better and grabs actual name from the site.
+
+        :return:
+        """
         url = self.url
         print("URL: {0}".format(url))
         if url.__contains__('/files'):
@@ -101,6 +107,45 @@ class Addon(object):
 
         name = url[url.rfind('/') + 1:]
         logging.debug("Name: {0}".format(name))
+        return name
+
+    def get_name(self):
+        url = self.url
+
+        if url.__contains__('/files'):
+            if not url.endswith('/files'):
+                logging.critical("Bad URL.")
+                return False
+
+        if url.__contains__('tukui'):
+            logging.info("URL from tukui found.")
+            name = url[url.rfind("=") + 1:].title()
+            logging.debug("Name: {0}".format(name))
+
+            return name
+
+        web_type = self.get_version_index(self.get_website_type())
+
+        if web_type is None:
+            return False
+        else:
+            uri = '/files'
+
+        try:
+            page = requests.get(self.url + uri)
+        except requests.exceptions.ConnectionError as ce:
+            logging.critical(ce)
+            return False
+
+        content = str(page.content)
+        logging.debug("Content of page: {0}".format(content))
+
+        start_ind = content.find(web_type) + len(web_type) + 1
+        end_ind = content.find("\"", start_ind)
+        name = content[start_ind:end_ind]
+
+        logging.debug("Name: {0}".format(name))
+
         return name
 
     def get_website_type(self):
@@ -125,12 +170,16 @@ class Addon(object):
 
 
 if __name__ == '__main__':
-    a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods/files")
+    # a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods")
+    a = Addon(url="https://www.tukui.org/download.php?ui=elvui")
     # a = Addon(url="http://www.google.com")
-    print("modified addon: {0}".format(a.url))
-    if not a.valid_url:
-        a.get_name()
-        a.get_update_version()
+    a.get_name()
 
+    #
+    # print("modified addon: {0}".format(a.url))
+    # if not a.valid_url:
+    #     a.get_name()
+    #     a.get_update_version()
+    #
 
 
