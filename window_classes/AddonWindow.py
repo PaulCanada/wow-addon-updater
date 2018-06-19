@@ -78,7 +78,7 @@ class AddonWindow(QDialog):
 
         logging.info("Checking if addon: {0} is already in config.".format(current_addon.name))
         exists = self.check_if_addon_in_config(current_addon)
-        logging.critical("Ex: {0}".format(exists))
+        logging.info("Addon exists: {0}".format(exists))
 
         if exists:
             self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
