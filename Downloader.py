@@ -108,7 +108,7 @@ class Downloader(object):
                 url_grab_response = requests.get(url)
 
             elif addon.addon_source.__contains__('tukui'):
-                uri = '/downloads/' + addon.url[addon.url.rfind("=") + 1:] + '-' + addon.latest_version + '.zip'
+                uri = '/downloads/' + addon.latest_version + '.zip'
                 url = addon.url[:addon.url.find("/download")] + uri
                 logging.debug("Tukui url: {0}".format(url))
                 url_grab_response = requests.get(url)
