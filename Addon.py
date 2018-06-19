@@ -21,13 +21,13 @@ class Addon(object):
 
         self.valid_url = self.check_for_valid_url()
 
-        if self.valid_url:
+        if self.valid_url and self.name == '':
             self.name = self.get_name()
 
             if self.name is False:
                 self.valid_url = False
 
-            if self.latest_version == "":
+            if self.latest_version == '':
                 self.latest_version = self.get_update_version()
 
                 if self.latest_version is None:
