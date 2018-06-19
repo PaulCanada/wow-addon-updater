@@ -10,7 +10,7 @@ class Addon(object):
 
     curse_project_locator = 'data-name='
     curse_addon_locator = 'file__name full">'
-    tukui_locator = 'downloads/elvui-'
+    tukui_locator = 'downloads/'
 
     def __init__(self, url='', name='', current_version='', latest_version=''):
         self.url = url
