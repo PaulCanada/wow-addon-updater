@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QModelIndex
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         AddAddon = pyqtSignal(Addon, QTreeView, QStandardItemModel)
         UpdateProgressBarValue = pyqtSignal(int)
         UpdateProgressBarMax = pyqtSignal(int)
+        RemoveAddon = pyqtSignal(str)
 
     except Exception as e:
         print(e)
@@ -86,6 +87,7 @@ class MainWindow(QMainWindow):
         self.AddAddon.connect(self.add_addon_to_tree_view)
         self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
+        self.RemoveAddon.connect(self.remove_addon)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
@@ -144,9 +146,8 @@ class MainWindow(QMainWindow):
         url_label.setText(url_text)
 
         remove_addon_button = QPushButton()
-        remove_addon_button.setText("Remove {0}:".format(addon.name))
-        print(len(addon.name))
-
+        remove_addon_button.setText("Remove {0}".format(addon.name))
+        remove_addon_button.clicked.connect(lambda: self.RemoveAddon.emit(addon.name))
         remove_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
 
         curr_ver_item = QStandardItem(addon.current_version)
@@ -159,7 +160,7 @@ class MainWindow(QMainWindow):
         url_item_identifier = QStandardItem("Addon Link: ")
         curr_ver_item_identifier = QStandardItem("Current Version: ")
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
-        remove_addon_item_identifier = QStandardItem("Remove Addon")
+        remove_addon_item_identifier = QStandardItem("Remove Addon: ")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -179,6 +180,29 @@ class MainWindow(QMainWindow):
         self.model.setHeaderData(0, 0x01, "")
         self.model.setHeaderData(1, 0x01, "")
 
+    @pyqtSlot(str)
+    def remove_addon(self, addon_name):
+        if addon_name not in self.settings.data['addons']:
+            return
+
+        message_box = QMessageBox.question(None, "Confirmation",
+                                           "Are you sure you want to remove {0}?".format(addon_name),
+                                           QMessageBox.Yes, QMessageBox.No)
+        if message_box == QMessageBox.Yes:
+            del self.settings.data['addons'][addon_name]
+            # print(self.settings.data.pop(key, None))
+            self.settings.save_config()
+            self.settings.load_config()
+            #
+            # self.tree_model.setModel(self.model)
+            # index = self.window.ui.tviewAddons.selectionModel().selectedRows()[0]
+            # print(index.row())
+            #
+            # self.model.removeRow(index.row() - 1)
+            # self.window.ui.tviewAddons.clearSelection()
+
+            self.UpdateTreeView.emit()
+
     @pyqtSlot()
     def update_tree_view(self):
         tree_data = self.settings.data['addons']
@@ -187,7 +211,7 @@ class MainWindow(QMainWindow):
         # No addons are loaded.
         # TODO: Insert blank row indicating there are no addons.
         if len(tree_data) == 0:
-            return
+            pass
         if self.model.hasChildren():
             self.model.removeRows(0, self.model.rowCount())
 
