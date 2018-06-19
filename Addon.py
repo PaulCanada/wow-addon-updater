@@ -27,10 +27,11 @@ class Addon(object):
             if self.name is False:
                 self.valid_url = False
 
-            self.latest_version = self.get_update_version()
+            if self.latest_version == "":
+                self.latest_version = self.get_update_version()
 
-            if self.latest_version is None:
-                self.valid_url = False
+                if self.latest_version is None:
+                    self.valid_url = False
 
     def get_version_index(self, addon_path):
         return{
