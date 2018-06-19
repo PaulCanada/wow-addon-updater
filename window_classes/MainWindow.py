@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.Qt import QModelIndex, QUrl, QTextFormat
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
@@ -11,7 +10,6 @@ from Worker import Worker
 from Settings import Settings
 from Downloader import Downloader
 from UpdateChecker import UpdateChecker
-from overrides.internal_overrides import MainWindowPrompt
 import logging
 
 HANDLE_STYLE = """
@@ -130,14 +128,13 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(Addon, QTreeView, QStandardItemModel)
     def add_addon_to_tree_view(self, addon, tree_model, model):
-        addon.name = addon.name
-
         tree_model.setModel(model)
 
         parent_item = QStandardItem(addon.name)
         col1 = QStandardItem()
 
         url_item = QStandardItem()
+        remove_addon_item = QStandardItem()
 
         # Create a QLabel to allow following hyperlinks in the table.
         url_label = QLabel()
@@ -145,6 +142,12 @@ class MainWindow(QMainWindow):
         url_label.setOpenExternalLinks(True)
         url_text = "<a href=\"" + addon.url + "\"> " + addon.name + "</a>"
         url_label.setText(url_text)
+
+        remove_addon_button = QPushButton()
+        remove_addon_button.setText("Remove {0}:".format(addon.name))
+        print(len(addon.name))
+
+        remove_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
 
         curr_ver_item = QStandardItem(addon.current_version)
         latest_ver_item = QStandardItem(addon.latest_version)
@@ -156,6 +159,7 @@ class MainWindow(QMainWindow):
         url_item_identifier = QStandardItem("Addon Link: ")
         curr_ver_item_identifier = QStandardItem("Current Version: ")
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
+        remove_addon_item_identifier = QStandardItem("Remove Addon")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -165,6 +169,9 @@ class MainWindow(QMainWindow):
 
         parent_item.appendRow([curr_ver_item_identifier, curr_ver_item])
         parent_item.appendRow([latest_ver_item_identifier, latest_ver_item])
+
+        parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
+        self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
 
         self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
