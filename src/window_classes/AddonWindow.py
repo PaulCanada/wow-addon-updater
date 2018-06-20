@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import requests
 import requests.exceptions
-from src.dev.classes.addons.Addon import Addon
+from src.dev.classes.addon.Addon import Addon
 import logging
 from src.dev.classes.workers.Worker import Worker
 

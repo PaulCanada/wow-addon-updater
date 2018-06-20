@@ -1,4 +1,4 @@
-from src.dev.classes.addons.Addon import Addon
+from src.dev.classes.addon.Addon import Addon
 import logging
 
 

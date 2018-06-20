@@ -5,7 +5,7 @@ from src.gui_py.main_window_gui import Ui_MainWindow
 from src.window_classes.AddonWindow import AddonWindow
 from src.window_classes.SettingsWindow import SettingsWindow
 import sys
-from src.dev.classes.addons.Addon import Addon
+from src.dev.classes.addon.Addon import Addon
 from src.dev.classes.workers.Worker import Worker
 from src.dev.classes.application.Settings import Settings
 from src.dev.classes.updates.Downloader import Downloader
