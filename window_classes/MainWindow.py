@@ -105,6 +105,9 @@ class MainWindow(QMainWindow):
 
         self.settings.check_for_wow_directory(self)
 
+        self.window.ui.tviewAddons.setColumnWidth(0, 300)
+
+
     @pyqtSlot()
     def add_addon(self):
         addon_window = AddonWindow(self.settings, self)
@@ -174,7 +177,7 @@ class MainWindow(QMainWindow):
         parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
         self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
 
-        self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
+        # self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
         # Comment out header as I don't like the look at the moment.
         self.model.setHeaderData(0, 0x01, "")

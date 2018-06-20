@@ -65,15 +65,18 @@ class Addon(object):
         logging.debug("Content of page: {0}".format(content))
         start_ind = content.find(web_type)
 
+        # If downloading from Tukui
         if web_type == self.tukui_locator:
             end_ind = content.find(".zip", start_ind + len(web_type))
             version = content[start_ind + len(web_type):end_ind]
+        # If downloading from Curse Addons (does this even exist?)
         elif web_type == self.curse_addon_locator:
             start_ind = content.find(web_type) + len(web_type)
             end_ind = content.find("<", start_ind)
             version = content[start_ind:end_ind]
-        else:
-            start_ind = content.find(web_type, start_ind + 1)
+        # If downloading from Curse Projects (this seems to be the standard)
+        elif web_type == self.curse_project_locator:
+            start_ind = content.find(web_type, content.find('project-file-list-item'))
             end_ind = content.find(">", start_ind)
             version = content[start_ind + len(web_type):end_ind].strip("\"")
 
@@ -96,12 +99,11 @@ class Addon(object):
 
             return name
 
-        web_type = self.get_version_index(self.get_website_type())
+        web_type = '<span class="overflow-tip">'
+        uri = '/files'
 
         if web_type is None:
             return False
-        else:
-            uri = '/files'
 
         try:
             page = requests.get(self.url + uri)
@@ -112,8 +114,8 @@ class Addon(object):
         content = str(page.content)
         logging.debug("Content of page: {0}".format(content))
 
-        start_ind = content.find(web_type) + len(web_type) + 1
-        end_ind = content.find("\"", start_ind)
+        start_ind = content.find(web_type) + len(web_type)
+        end_ind = content.find('</span></a>\\r\\n', start_ind)
         name = content[start_ind:end_ind]
 
         logging.debug("Name: {0}".format(name))
@@ -128,7 +130,7 @@ class Addon(object):
         elif 'mods.curse.com/addons/wow' in self.url:
             return 'curse-addons'
         elif 'wowinterface' in self.url:
-            return ''
+            return None
         elif 'tukui.org' in self.url:
             return 'tukui'
         else:
@@ -143,7 +145,7 @@ class Addon(object):
 
 if __name__ == '__main__':
     # a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods")
-    a = Addon(url="https://www.tukui.org/download.php?ui=elvui")
+    a = Addon(url="https://wow.curseforge.com/projects/flo-totem-bar")
     # a = Addon(url="http://www.google.com")
     a.get_name()
 
