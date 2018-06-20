@@ -5,11 +5,11 @@ from src.gui_py.main_window_gui import Ui_MainWindow
 from src.window_classes.AddonWindow import AddonWindow
 from src.window_classes.SettingsWindow import SettingsWindow
 import sys
-from src.dev.classes.Addon import Addon
-from src.dev.classes.Worker import Worker
-from src.dev.classes.Settings import Settings
-from src.dev.classes.Downloader import Downloader
-from src.dev.classes.UpdateChecker import UpdateChecker
+from src.dev.classes.addons.Addon import Addon
+from src.dev.classes.workers.Worker import Worker
+from src.dev.classes.application.Settings import Settings
+from src.dev.classes.updates.Downloader import Downloader
+from src.dev.classes.updates.UpdateChecker import UpdateChecker
 import logging
 
 HANDLE_STYLE = """
