@@ -110,6 +110,7 @@ dist/
 Addons/
 config/
 *.iml
+downloaded_archives/
 
 # User-specific stuff
 .idea/**/workspace.xml
