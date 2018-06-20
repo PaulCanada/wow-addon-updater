@@ -1,6 +1,5 @@
-from Addon import Addon
+from src.dev.classes.addon.Addon import Addon
 import logging
-import os.path
 
 
 class UpdateChecker(object):

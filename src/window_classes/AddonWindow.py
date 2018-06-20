@@ -1,11 +1,11 @@
-from gui_py.addon_window_gui import Ui_Form
+from src.gui_py.addon_window_gui import Ui_Form
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import requests
 import requests.exceptions
-from Addon import Addon
+from src.dev.classes.addon.Addon import Addon
 import logging
-from Worker import Worker
+from src.dev.classes.workers.Worker import Worker
 
 supported_sites = ['curse-projects', 'curse-addons', 'tukui']
 

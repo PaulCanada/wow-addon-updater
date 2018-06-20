@@ -1,15 +1,15 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, QModelIndex
-from gui_py.main_window_gui import Ui_MainWindow
-from window_classes.AddonWindow import AddonWindow
-from window_classes.SettingsWindow import SettingsWindow
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from src.gui_py.main_window_gui import Ui_MainWindow
+from src.window_classes.AddonWindow import AddonWindow
+from src.window_classes.SettingsWindow import SettingsWindow
 import sys
-from Addon import Addon
-from Worker import Worker
-from Settings import Settings
-from Downloader import Downloader
-from UpdateChecker import UpdateChecker
+from src.dev.classes.addon.Addon import Addon
+from src.dev.classes.workers.Worker import Worker
+from src.dev.classes.application.Settings import Settings
+from src.dev.classes.updates.Downloader import Downloader
+from src.dev.classes.updates.UpdateChecker import UpdateChecker
 import logging
 
 HANDLE_STYLE = """
