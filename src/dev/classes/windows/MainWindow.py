@@ -104,6 +104,7 @@ class MainWindow(QMainWindow):
         self.UpdateTreeView.emit()
 
         self.settings.check_for_wow_directory(self)
+        self.window.ui.label.setHidden(True)
 
         self.window.ui.tviewAddons.setColumnWidth(0, 300)
 
@@ -180,7 +181,7 @@ class MainWindow(QMainWindow):
         # self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
         # Comment out header as I don't like the look at the moment.
-        self.model.setHeaderData(0, 0x01, "")
+        self.model.setHeaderData(0, 0x01, "Addons")
         self.model.setHeaderData(1, 0x01, "")
 
     @pyqtSlot(str)
@@ -221,6 +222,8 @@ class MainWindow(QMainWindow):
                                   tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'])
 
             self.AddAddon.emit(current_addon, self.tree_model, self.model)
+
+        self.window.ui.tviewAddons.sortByColumn(0, 0x00)
 
     @pyqtSlot(str, str, str)
     def show_message_box(self, message='', inform='', message_type='warn'):
