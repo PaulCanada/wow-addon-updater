@@ -51,7 +51,7 @@ class Downloader(object):
         self.parent.OutputUpdater.emit("Extracting files to {0}".format(file_dir))
         try:
             zipper = zipfile.ZipFile(file_dir, 'r')
-            zipper.extractall(self.parent.settings.data['settings']['wow_dir'] + '/' + addon.name)
+            zipper.extractall(self.parent.settings.data['settings']['wow_dir'] + '/')
             zipper.close()
             self.parent.OutputUpdater.emit("Extraction complete.")
 
@@ -75,6 +75,8 @@ class Downloader(object):
         except Exception as ze:
             logging.critical("Error unzipping addon: {0}".format(ze))
             self.parent.OutputUpdater.emit("Error unzipping addon: {0}".format(ze))
+
+        self.parent.UpdateTreeView.emit()
 
     def download_from_url(self, addon):
         logging.info("Attemtping to download file: {0}".format(addon.url))
@@ -108,7 +110,7 @@ class Downloader(object):
                 url_grab_response = requests.get(url)
 
             elif addon.addon_source.__contains__('tukui'):
-                uri = '/downloads/' + addon.url[addon.url.rfind("=") + 1:] + '-' + addon.latest_version + '.zip'
+                uri = '/downloads/' + addon.latest_version + '.zip'
                 url = addon.url[:addon.url.find("/download")] + uri
                 logging.debug("Tukui url: {0}".format(url))
                 url_grab_response = requests.get(url)

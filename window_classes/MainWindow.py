@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.Qt import QModelIndex, QUrl, QTextFormat
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QModelIndex
 from gui_py.main_window_gui import Ui_MainWindow
 from window_classes.AddonWindow import AddonWindow
 from window_classes.SettingsWindow import SettingsWindow
@@ -11,7 +10,6 @@ from Worker import Worker
 from Settings import Settings
 from Downloader import Downloader
 from UpdateChecker import UpdateChecker
-from overrides.internal_overrides import MainWindowPrompt
 import logging
 
 HANDLE_STYLE = """
@@ -43,6 +41,7 @@ class MainWindow(QMainWindow):
         AddAddon = pyqtSignal(Addon, QTreeView, QStandardItemModel)
         UpdateProgressBarValue = pyqtSignal(int)
         UpdateProgressBarMax = pyqtSignal(int)
+        RemoveAddon = pyqtSignal(str)
 
     except Exception as e:
         print(e)
@@ -88,6 +87,7 @@ class MainWindow(QMainWindow):
         self.AddAddon.connect(self.add_addon_to_tree_view)
         self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
+        self.RemoveAddon.connect(self.remove_addon)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
@@ -104,6 +104,9 @@ class MainWindow(QMainWindow):
         self.UpdateTreeView.emit()
 
         self.settings.check_for_wow_directory(self)
+
+        self.window.ui.tviewAddons.setColumnWidth(0, 300)
+
 
     @pyqtSlot()
     def add_addon(self):
@@ -130,14 +133,13 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(Addon, QTreeView, QStandardItemModel)
     def add_addon_to_tree_view(self, addon, tree_model, model):
-        addon.name = addon.name.title()
-
         tree_model.setModel(model)
 
         parent_item = QStandardItem(addon.name)
         col1 = QStandardItem()
 
         url_item = QStandardItem()
+        remove_addon_item = QStandardItem()
 
         # Create a QLabel to allow following hyperlinks in the table.
         url_label = QLabel()
@@ -145,6 +147,11 @@ class MainWindow(QMainWindow):
         url_label.setOpenExternalLinks(True)
         url_text = "<a href=\"" + addon.url + "\"> " + addon.name + "</a>"
         url_label.setText(url_text)
+
+        remove_addon_button = QPushButton()
+        remove_addon_button.setText("Remove {0}".format(addon.name))
+        remove_addon_button.clicked.connect(lambda: self.RemoveAddon.emit(addon.name))
+        remove_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
 
         curr_ver_item = QStandardItem(addon.current_version)
         latest_ver_item = QStandardItem(addon.latest_version)
@@ -156,6 +163,7 @@ class MainWindow(QMainWindow):
         url_item_identifier = QStandardItem("Addon Link: ")
         curr_ver_item_identifier = QStandardItem("Current Version: ")
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
+        remove_addon_item_identifier = QStandardItem("Remove Addon: ")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -166,11 +174,37 @@ class MainWindow(QMainWindow):
         parent_item.appendRow([curr_ver_item_identifier, curr_ver_item])
         parent_item.appendRow([latest_ver_item_identifier, latest_ver_item])
 
-        self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
+        parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
+        self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
+
+        # self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
         # Comment out header as I don't like the look at the moment.
         self.model.setHeaderData(0, 0x01, "")
         self.model.setHeaderData(1, 0x01, "")
+
+    @pyqtSlot(str)
+    def remove_addon(self, addon_name):
+        if addon_name not in self.settings.data['addons']:
+            return
+
+        message_box = QMessageBox.question(None, "Confirmation",
+                                           "Are you sure you want to remove {0}?".format(addon_name),
+                                           QMessageBox.Yes, QMessageBox.No)
+        if message_box == QMessageBox.Yes:
+            del self.settings.data['addons'][addon_name]
+            # print(self.settings.data.pop(key, None))
+            self.settings.save_config()
+            self.settings.load_config()
+            #
+            # self.tree_model.setModel(self.model)
+            # index = self.window.ui.tviewAddons.selectionModel().selectedRows()[0]
+            # print(index.row())
+            #
+            # self.model.removeRow(index.row() - 1)
+            # self.window.ui.tviewAddons.clearSelection()
+
+            self.UpdateTreeView.emit()
 
     @pyqtSlot()
     def update_tree_view(self):
@@ -180,7 +214,7 @@ class MainWindow(QMainWindow):
         # No addons are loaded.
         # TODO: Insert blank row indicating there are no addons.
         if len(tree_data) == 0:
-            return
+            pass
         if self.model.hasChildren():
             self.model.removeRows(0, self.model.rowCount())
 
@@ -237,7 +271,7 @@ class MainWindow(QMainWindow):
         if update_list:
             self.OutputUpdater.emit("Addons out of date:")
             for addon in update_list:
-                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name.title(),
+                self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name,
                                                                                             addon.current_version,
                                                                                             addon.latest_version))
             message_box = QMessageBox.question(None, "Updates found.",

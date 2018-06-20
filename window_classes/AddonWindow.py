@@ -55,6 +55,7 @@ class AddonWindow(QDialog):
             return False
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
+        current_addon.name = current_addon.name.replace(":", "")
         logging.debug("Current addon source: {0}".format(current_addon.addon_source))
         if current_addon.addon_source not in supported_sites:
             self.MessageBox.emit("Host not supported",
@@ -78,14 +79,14 @@ class AddonWindow(QDialog):
 
         logging.info("Checking if addon: {0} is already in config.".format(current_addon.name))
         exists = self.check_if_addon_in_config(current_addon)
-        logging.critical("Ex: {0}".format(exists))
+        logging.info("Addon exists: {0}".format(exists))
 
         if exists:
             self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
             return False
         else:
             logging.debug("Addon is not in list. Adding addon: {0}".format(current_addon.name))
-            addon_dict = {'name': current_addon.name.title().replace("-", " ").replace("_", " "),
+            addon_dict = {'name': current_addon.name,
                           'url': current_addon.url,
                           'current_version': 'Unknown',
                           'latest_version': current_addon.latest_version}
