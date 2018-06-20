@@ -51,7 +51,7 @@ class Downloader(object):
         self.parent.OutputUpdater.emit("Extracting files to {0}".format(file_dir))
         try:
             zipper = zipfile.ZipFile(file_dir, 'r')
-            zipper.extractall(self.parent.settings.data['settings']['wow_dir'] + '/' + addon.name)
+            zipper.extractall(self.parent.settings.data['settings']['wow_dir'] + '/')
             zipper.close()
             self.parent.OutputUpdater.emit("Extraction complete.")
 
