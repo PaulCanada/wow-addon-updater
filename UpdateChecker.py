@@ -16,6 +16,7 @@ class UpdateChecker(object):
 
         for key in self.parent.settings.data['addons']:
             current_addon = Addon(url=self.parent.settings.data['addons'][key]['url'],
+                                  name=self.parent.settings.data['addons'][key]['name'],
                                   current_version=self.parent.settings.data['addons'][key]['current_version'])
 
             print("Current ver: {0}".format(current_addon.current_version))
