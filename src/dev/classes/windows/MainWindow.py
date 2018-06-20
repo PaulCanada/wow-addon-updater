@@ -2,8 +2,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTre
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
-from src.window_classes.AddonWindow import AddonWindow
-from src.window_classes.SettingsWindow import SettingsWindow
+from src.dev.classes.windows.AddonWindow import AddonWindow
+from src.dev.classes.windows.SettingsWindow import SettingsWindow
 import sys
 from src.dev.classes.addon.Addon import Addon
 from src.dev.classes.workers.Worker import Worker

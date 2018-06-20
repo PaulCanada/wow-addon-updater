@@ -1,4 +1,4 @@
-from src.window_classes.MainWindow import MainWindow
+from src.dev.classes.windows.MainWindow import MainWindow
 from PyQt5.QtWidgets import QApplication
 import sys
 import logging
