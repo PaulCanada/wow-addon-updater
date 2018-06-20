@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
 from src.window_classes.AddonWindow import AddonWindow
 from src.window_classes.SettingsWindow import SettingsWindow
@@ -196,15 +196,13 @@ class MainWindow(QMainWindow):
             # print(self.settings.data.pop(key, None))
             self.settings.save_config()
             self.settings.load_config()
-            #
-            # self.tree_model.setModel(self.model)
-            # index = self.window.ui.tviewAddons.selectionModel().selectedRows()[0]
-            # print(index.row())
-            #
-            # self.model.removeRow(index.row() - 1)
-            # self.window.ui.tviewAddons.clearSelection()
 
-            self.UpdateTreeView.emit()
+            index = self.window.ui.tviewAddons.selectionModel().selectedRows()[0]
+            parent = index.parent()
+
+            self.window.ui.tviewAddons.selectionModel().setCurrentIndex(self.window.ui.tviewAddons.indexAbove(index),
+                                                                        QItemSelectionModel.ClearAndSelect)
+            self.model.removeRow(parent.row())
 
     @pyqtSlot()
     def update_tree_view(self):
