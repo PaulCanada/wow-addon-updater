@@ -26,9 +26,7 @@ class UpdateChecker(object):
             logging.info("Retrieving latest version for addon: {0}".format(current_addon.name))
             current_addon.latest_version = current_addon.get_update_version()
 
-            if current_addon.current_version != current_addon.latest_version or not os.path.isdir(
-                    self.parent.settings.data['settings']['wow_dir'] + '/' + current_addon.name):
-
+            if current_addon.current_version != current_addon.latest_version:
                 logging.info("{0} is out of date!".format(self.parent.settings.data['addons'][key]['name']))
                 update_list.append(current_addon)
 
