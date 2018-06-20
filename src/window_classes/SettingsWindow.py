@@ -1,4 +1,4 @@
-from gui_py.settings_gui import Ui_Settings
+from src.gui_py.settings_gui import Ui_Settings
 from PyQt5.QtWidgets import QDialog, QFileDialog
 import logging
 import os

@@ -1,7 +1,7 @@
 import os
 import requests
 import logging
-from Addon import Addon
+from src.dev.classes.Addon import Addon
 import zipfile
 
 test_url_a = "https://wow.curseforge.com/projects/deadly-boss-mods"
