@@ -69,7 +69,7 @@ class Addon(object):
         if web_type == self.tukui_locator:
             end_ind = content.find(".zip", start_ind + len(web_type))
             version = content[start_ind + len(web_type):end_ind]
-        # If downloading from Curse Addons (does this even exist?)
+        # If downloading from Curse Addons
         elif web_type == self.curse_addon_locator:
             start_ind = content.find(web_type) + len(web_type)
             end_ind = content.find("<", start_ind)
@@ -86,6 +86,7 @@ class Addon(object):
 
     def get_name(self):
         url = self.url
+        uri = '/files'
 
         if url.__contains__('/files'):
             if not url.endswith('/files'):
@@ -99,11 +100,12 @@ class Addon(object):
 
             return name
 
-        web_type = '<span class="overflow-tip">'
-        uri = '/files'
-
-        if web_type is None:
-            return False
+        elif url.__contains__("wow/addons/"):
+            web_type = '"og:title" content="'
+            ending_pattern = '" />\\r\\n<meta'
+        else:
+            web_type = '<span class="overflow-tip">'
+            ending_pattern = '</span></a>\\r\\n'
 
         try:
             page = requests.get(self.url + uri)
@@ -115,7 +117,7 @@ class Addon(object):
         logging.debug("Content of page: {0}".format(content))
 
         start_ind = content.find(web_type) + len(web_type)
-        end_ind = content.find('</span></a>\\r\\n', start_ind)
+        end_ind = content.find(ending_pattern, start_ind)
         name = content[start_ind:end_ind]
 
         logging.debug("Name: {0}".format(name))
@@ -145,7 +147,7 @@ class Addon(object):
 
 if __name__ == '__main__':
     # a = Addon(url="https://wow.curseforge.com/projects/deadly-boss-mods")
-    a = Addon(url="https://wow.curseforge.com/projects/flo-totem-bar")
+    a = Addon(url="https://www.curseforge.com/wow/addons/pettracker")
     # a = Addon(url="http://www.google.com")
     a.get_name()
 
