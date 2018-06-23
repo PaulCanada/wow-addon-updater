@@ -55,7 +55,7 @@ class AddonWindow(QDialog):
             return False
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
-        current_addon.name = current_addon.name.replace(":", "")
+        current_addon.name = current_addon.name
         logging.debug("Current addon source: {0}".format(current_addon.addon_source))
         if current_addon.addon_source not in supported_sites:
             self.MessageBox.emit("Host not supported",

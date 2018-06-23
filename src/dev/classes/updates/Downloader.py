@@ -29,7 +29,7 @@ class Downloader(object):
             os.mkdir(self.zip_dir)
 
     def update_addon(self, addon):
-        self.parent.OutputUpdater.emit("Downloading files for {0} to {1}".format(addon.name.title(),
+        self.parent.OutputUpdater.emit("Downloading files for {0} to {1}".format(addon.name,
                                                                                  os.path.abspath(self.zip_dir)))
         response, file_dir = self.download_from_url(addon)
 
@@ -120,7 +120,7 @@ class Downloader(object):
                 return False
 
             logging.debug("URL Reponse: {0}".format(url_grab_response))
-            local_path = addon.name + '_' + addon.latest_version
+            local_path = addon.name.replace(":", "_") + '_' + addon.latest_version
             logging.debug("Local path: {0}".format(local_path))
 
             download_dir = self.zip_dir + '/' + local_path + '.zip'
