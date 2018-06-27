@@ -31,6 +31,8 @@ class AddonWindow(QDialog):
     def add(self):
         print(self.window.ui.leditAddonUrl.text())
         self.settings.load_config()
+        self.window.ui.buttonBox.setDisabled(True)
+
         try:
             response = requests.get(self.window.ui.leditAddonUrl.text())
 
@@ -38,37 +40,47 @@ class AddonWindow(QDialog):
 
             if not response:
                 logging.critical("Did not get back a 200 OK response.")
+                self.window.ui.buttonBox.setEnabled(True)
                 return False
 
         except requests.exceptions.MissingSchema as e:
             logging.critical(e)
             self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.", 'critical')
+            self.window.ui.buttonBox.setEnabled(True)
             return False
         except requests.exceptions.InvalidSchema as ie:
             logging.critical(ie)
             self.MessageBox.emit("Invalid URL: invalid schema.", "Bad URL request.", 'critical')
+            self.window.ui.buttonBox.setEnabled(True)
             return False
         except requests.exceptions.ConnectionError as ce:
             logging.critical(ce)
             self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
                 self.window.ui.leditAddonUrl.text(), 'critical'))
+            self.window.ui.buttonBox.setEnabled(True)
             return False
+
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
         current_addon.name = current_addon.name
         logging.debug("Current addon source: {0}".format(current_addon.addon_source))
+
         if current_addon.addon_source not in supported_sites:
             self.MessageBox.emit("Host not supported",
                                  "Downloading files from {0} is not currently supported.".format(current_addon.url),
                                  "warn")
             current_addon.valid_url = -1
+            self.window.ui.buttonBox.setEnabled(True)
+            return False
 
         if current_addon.valid_url == -1:
+            self.window.ui.buttonBox.setEnabled(True)
             return False
         elif current_addon.valid_url is False:
             self.MessageBox.emit("Invalid URL",
                                  "Invalid WoW Addon URL. If you think this is a mistake, contact developer.",
                                  'critical')
+            self.window.ui.buttonBox.setEnabled(True)
             return False
         else:
             logging.debug("Valid URL.")
@@ -83,6 +95,7 @@ class AddonWindow(QDialog):
 
         if exists:
             self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
+            self.window.ui.buttonBox.setEnabled(True)
             return False
         else:
             logging.debug("Addon is not in list. Adding addon: {0}".format(current_addon.name))
@@ -102,6 +115,7 @@ class AddonWindow(QDialog):
             self.settings.save_config()
             self.settings.load_config()
             self.parent.AddAddon.emit(current_addon, self.parent.window.ui.tviewAddons, self.parent.model)
+            self.window.ui.buttonBox.setEnabled(True)
             return True
 
     def check_if_addon_in_config(self, addon):
