@@ -1,4 +1,4 @@
-# wow-addon-updater
+# WoW AddOn Updater
 AddOn updater for popular game World of Warcraft.
 
 ## Building
