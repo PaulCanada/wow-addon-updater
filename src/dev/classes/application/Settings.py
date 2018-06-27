@@ -1,6 +1,7 @@
 import simplejson
 import os
 import logging
+from sortedcontainers import sorteddict
 
 config_path = './config/config.json'
 
@@ -8,7 +9,7 @@ config_path = './config/config.json'
 class Settings(object):
 
     def __init__(self):
-        self.data = {}
+        self.data = sorteddict.SortedDict()
         self.initialize_data()
         self.files_to_update = []
         self.load_config()
@@ -64,6 +65,8 @@ class Settings(object):
             self.data = simplejson.loads(f.read())
 
     def save_config(self):
+        self.data['addons'] = {k: self.data['addons'][k] for k in sorted(self.data['addons'])}
+
         with open(config_path, 'w') as f:
             f.write(simplejson.dumps(self.data, indent=4, ensure_ascii=True))
 
