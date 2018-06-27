@@ -62,6 +62,8 @@ class MainWindow(QMainWindow):
         self.tree_model = self.window.ui.tviewAddons
         self.model = QStandardItemModel(self.tree_model)
 
+        self.window.ui.actionClose.triggered.connect(self.close)
+
         self.init_ui()
 
     def closeEvent(self, event):
