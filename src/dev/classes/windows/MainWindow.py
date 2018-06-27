@@ -4,6 +4,7 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
 from src.dev.classes.windows.AddonWindow import AddonWindow
 from src.dev.classes.windows.SettingsWindow import SettingsWindow
+from src.dev.classes.windows.AboutWindow import AboutWindow
 import sys
 from src.dev.classes.addon.Addon import Addon
 from src.dev.classes.workers.Worker import Worker
@@ -62,11 +63,15 @@ class MainWindow(QMainWindow):
         self.tree_model = self.window.ui.tviewAddons
         self.model = QStandardItemModel(self.tree_model)
 
+        self.window.ui.actionClose.triggered.connect(self.close)
+        self.window.ui.actionAbout.triggered.connect(self.open_about_window)
+
+
         self.init_ui()
 
     def closeEvent(self, event):
         if self.settings.data['settings']['prompt_to_close']:
-            prompt = QMessageBox.question(self, 'Are you sure you want to quit?', 'Task is in progress !',
+            prompt = QMessageBox.question(self, 'Confirmation', 'Are you sure you want to quit?',
                                           QMessageBox.Yes, QMessageBox.No)
 
             if prompt == QMessageBox.Yes:
@@ -97,7 +102,6 @@ class MainWindow(QMainWindow):
         self.UpdateProgressBarMax.emit(10)
         self.UpdateProgressBarValue.emit(0)
         self.window.ui.progressBar.setVisible(False)
-
         # Setting the header to hidden removes the drag bar for column width resizing.
         # self.window.ui.tviewAddons.setHeaderHidden(True)
 
@@ -113,6 +117,11 @@ class MainWindow(QMainWindow):
     def add_addon(self):
         addon_window = AddonWindow(self.settings, self)
         addon_window.exec()
+
+    @pyqtSlot()
+    def open_about_window(self):
+        about_window = AboutWindow(self)
+        about_window.exec()
 
     @pyqtSlot(str)
     def insert_output_text(self, text):
