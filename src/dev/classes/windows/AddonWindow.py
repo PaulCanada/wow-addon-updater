@@ -1,5 +1,5 @@
 from src.gui_py.addon_window_gui import Ui_Form
-from PyQt5.QtWidgets import QDialog, QMessageBox
+from PyQt5.QtWidgets import QDialog, QMessageBox, QDialogButtonBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import requests
 import requests.exceptions
@@ -24,6 +24,8 @@ class AddonWindow(QDialog):
         self.window.ui.buttonBox.accepted.connect(self.worker.start)
         self.window.ui.buttonBox.rejected.connect(self.close)
         self.MessageBox.connect(self.show_message_box)
+
+        self.window.ui.buttonBox.button(QDialogButtonBox.Ok).setText("Add")
 
         self.settings = settings
         self.parent = parent
