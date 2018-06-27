@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         if self.settings.data['settings']['prompt_to_close']:
-            prompt = QMessageBox.question(self, 'Are you sure you want to quit?', 'Task is in progress !',
+            prompt = QMessageBox.question(self, 'Confirmation', 'Are you sure you want to quit?',
                                           QMessageBox.Yes, QMessageBox.No)
 
             if prompt == QMessageBox.Yes:
