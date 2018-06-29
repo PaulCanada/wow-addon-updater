@@ -9,7 +9,7 @@ Use the following `.spec` file to build the project to a single-file executable 
 block_cipher = None
 
 
-a = Analysis(['run.py'],
+a = Analysis(['src\\run.py'],
              pathex=['PATH_TO_REPO_DIRECTORY'],
              binaries=[],
              datas=[],
