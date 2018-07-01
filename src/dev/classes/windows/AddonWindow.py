@@ -43,6 +43,8 @@ class AddonWindow(QDialog):
             if not response:
                 logging.critical("Did not get back a 200 OK response.")
                 self.window.ui.buttonBox.setEnabled(True)
+                self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
+                    self.window.ui.leditAddonUrl.text()), 'critical')
                 return False
 
         except requests.exceptions.MissingSchema as e:
@@ -58,10 +60,9 @@ class AddonWindow(QDialog):
         except requests.exceptions.ConnectionError as ce:
             logging.critical(ce)
             self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
-                self.window.ui.leditAddonUrl.text(), 'critical'))
+                self.window.ui.leditAddonUrl.text()), 'critical')
             self.window.ui.buttonBox.setEnabled(True)
             return False
-
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
         current_addon.name = current_addon.name

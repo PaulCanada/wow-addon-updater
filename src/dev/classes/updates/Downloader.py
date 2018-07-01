@@ -75,8 +75,10 @@ class Downloader(object):
         except Exception as ze:
             logging.critical("Error unzipping addon: {0}".format(ze))
             self.parent.OutputUpdater.emit("Error unzipping addon: {0}".format(ze))
+            return False
 
         self.parent.UpdateTreeView.emit()
+        return True
 
     def download_from_url(self, addon):
         logging.info("Attemtping to download file: {0}".format(addon.url))

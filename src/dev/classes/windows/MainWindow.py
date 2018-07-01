@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
-from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
+from PyQt5.Qt import QSizePolicy
+from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem, QMovie
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
 from src.dev.classes.windows.AddonWindow import AddonWindow
@@ -12,6 +13,7 @@ from src.dev.classes.application.Settings import Settings
 from src.dev.classes.updates.Downloader import Downloader
 from src.dev.classes.updates.UpdateChecker import UpdateChecker
 import logging
+import src.icons_rc
 
 HANDLE_STYLE = """
 QSplitter::handle:horizontal {
@@ -40,9 +42,11 @@ class MainWindow(QMainWindow):
         MessageBox = pyqtSignal(str, str, str)
         UpdateTreeView = pyqtSignal()
         AddAddon = pyqtSignal(Addon, QTreeView, QStandardItemModel)
-        UpdateProgressBarValue = pyqtSignal(int)
-        UpdateProgressBarMax = pyqtSignal(int)
+        # UpdateProgressBarValue = pyqtSignal(int)
+        # UpdateProgressBarMax = pyqtSignal(int)
         RemoveAddon = pyqtSignal(str)
+        LoadingGifSignal = pyqtSignal(bool)
+        SetUpdateCount = pyqtSignal(int, int)
 
     except Exception as e:
         print(e)
@@ -56,6 +60,7 @@ class MainWindow(QMainWindow):
         self.app = QApplication(sys.argv)
 
         self.settings = Settings()
+        self.movie = QMovie(":/app/loading_icon.gif")
 
         self.download_worker = Worker(self.execute_download)
         self.update_worker = Worker(self.execute_check_updates)
@@ -90,18 +95,21 @@ class MainWindow(QMainWindow):
         self.MessageBox.connect(self.show_message_box)
         self.UpdateTreeView.connect(self.update_tree_view)
         self.AddAddon.connect(self.add_addon_to_tree_view)
-        self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
-        self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
+        # self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
+        # self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
         self.RemoveAddon.connect(self.remove_addon)
+        self.LoadingGifSignal.connect(self.toggle_loading_gif)
+        self.SetUpdateCount.connect(self.set_update_count_value)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
         self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
 
-        self.UpdateProgressBarMax.emit(10)
-        self.UpdateProgressBarValue.emit(0)
-        self.window.ui.progressBar.setVisible(False)
+        # self.UpdateProgressBarMax.emit(10)
+        # self.UpdateProgressBarValue.emit(0)
+        # self.window.ui.progressBar.setVisible(False)
+
         # Setting the header to hidden removes the drag bar for column width resizing.
         # self.window.ui.tviewAddons.setHeaderHidden(True)
 
@@ -112,6 +120,11 @@ class MainWindow(QMainWindow):
 
         self.window.ui.tviewAddons.setColumnWidth(0, 300)
 
+        self.window.ui.lblLoadingMovie.setMovie(self.movie)
+        self.window.ui.lblLoadingMovie.setMaximumHeight(50)
+        self.window.ui.lblLoadingMovie.setScaledContents(True)
+        self.window.ui.lblLoadingMovie.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.window.ui.frameUpdate.setVisible(False)
 
     @pyqtSlot()
     def add_addon(self):
@@ -136,6 +149,21 @@ class MainWindow(QMainWindow):
     @pyqtSlot(int)
     def set_progress_bar_value(self, val):
         self.window.ui.progressBar.setValue(val)
+
+    @pyqtSlot(bool)
+    def toggle_loading_gif(self, enabled):
+        if enabled:
+            self.window.ui.frameUpdate.setVisible(True)
+            self.window.ui.btnCheckForUpdates.setVisible(False)
+            self.movie.start()
+        else:
+            self.window.ui.frameUpdate.setVisible(False)
+            self.window.ui.btnCheckForUpdates.setVisible(True)
+            self.movie.stop()
+
+    @pyqtSlot(int, int)
+    def set_update_count_value(self, current, max):
+        self.window.ui.lblCurrentUpdate.setText("( {0} out of {1} )".format(current, max))
 
     @pyqtSlot(int)
     def set_progress_bar_max(self, val):
@@ -268,7 +296,10 @@ class MainWindow(QMainWindow):
         self.OutputUpdater.emit("Checking for updates...")
 
         updater = UpdateChecker(self)
+        self.LoadingGifSignal.emit(True)
+
         update_list = updater.check_for_updates()
+        self.LoadingGifSignal.emit(False)
 
         self.window.ui.btnCheckForUpdates.setText("Check For Updates")
         self.window.ui.btnCheckForUpdates.setEnabled(True)
@@ -306,9 +337,31 @@ class MainWindow(QMainWindow):
         d = Downloader(self)
         to_update = self.settings.files_to_update
         logging.info("Update list: {0}".format(to_update))
+        self.LoadingGifSignal.emit(True)
+        current_download_val = 1
+        max_download_value = len(to_update)
+        download_failed_list = []
+        update_text = ''
 
         for addon in to_update:
-            d.update_addon(addon)
+            self.SetUpdateCount.emit(current_download_val, max_download_value)
+
+            if not d.update_addon(addon):
+                download_failed_list.append(addon.name)
+
+            self.SetUpdateCount.emit(current_download_val, max_download_value)
+            current_download_val += 1
+
+        self.LoadingGifSignal.emit(False)
+
+        # If downloads failed, tell the user.
+        if download_failed_list:
+            update_text = "The following AddOns failed to download: {0}".format(download_failed_list)
+
+            self.MessageBox.emit("Status", update_text, "warn")
+        else:
+            update_text = "All AddOns were downloaded and extracted successfully to AddOns folder."
+            self.MessageBox.emit("Complete", update_text, "inform")
 
 
 def main():
