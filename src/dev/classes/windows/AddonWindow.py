@@ -1,6 +1,7 @@
-from src.gui_py.addon_window_gui import Ui_Form
+from src.gui_py.addon_window_gui import Ui_AddonWindow
 from PyQt5.QtWidgets import QDialog, QMessageBox, QDialogButtonBox
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtGui import QIcon
 import requests
 import requests.exceptions
 from src.dev.classes.addon.Addon import Addon
@@ -19,7 +20,7 @@ class AddonWindow(QDialog):
         self.worker = Worker(self.add)
 
         self.window = QDialog()
-        self.window.ui = Ui_Form()
+        self.window.ui = Ui_AddonWindow()
         self.window.ui.setupUi(self)
         self.window.ui.buttonBox.accepted.connect(self.worker.start)
         self.window.ui.buttonBox.rejected.connect(self.close)
@@ -49,15 +50,15 @@ class AddonWindow(QDialog):
 
         except requests.exceptions.MissingSchema as e:
             logging.critical(e)
-            self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http' or 'https'.", 'critical')
+            self.MessageBox.emit("Invalid URL: missing scehma.", "URL is missing 'http://' or 'https://'.", 'critical')
             self.window.ui.buttonBox.setEnabled(True)
             return False
-        except requests.exceptions.InvalidSchema as ie:
+        except (requests.exceptions.InvalidSchema, requests.exceptions.InvalidURL) as ie:
             logging.critical(ie)
             self.MessageBox.emit("Invalid URL: invalid schema.", "Bad URL request.", 'critical')
             self.window.ui.buttonBox.setEnabled(True)
             return False
-        except requests.exceptions.ConnectionError as ce:
+        except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout) as ce:
             logging.critical(ce)
             self.MessageBox.emit("Invalid URL", "Cannot reach requested URL: {0}".format(
                 self.window.ui.leditAddonUrl.text()), 'critical')
@@ -65,7 +66,6 @@ class AddonWindow(QDialog):
             return False
 
         current_addon = Addon(url=self.window.ui.leditAddonUrl.text(), current_version="Unknown")
-        current_addon.name = current_addon.name
         logging.debug("Current addon source: {0}".format(current_addon.addon_source))
 
         if current_addon.addon_source not in supported_sites:
@@ -76,10 +76,7 @@ class AddonWindow(QDialog):
             self.window.ui.buttonBox.setEnabled(True)
             return False
 
-        if current_addon.valid_url == -1:
-            self.window.ui.buttonBox.setEnabled(True)
-            return False
-        elif current_addon.valid_url is False:
+        if current_addon.valid_url is False:
             self.MessageBox.emit("Invalid URL",
                                  "Invalid WoW Addon URL. If you think this is a mistake, contact developer.",
                                  'critical')
@@ -97,7 +94,8 @@ class AddonWindow(QDialog):
         logging.info("Addon exists: {0}".format(exists))
 
         if exists:
-            self.MessageBox.emit("Addon already added", "This addon is already in your AddOns list.", 'warn')
+            self.MessageBox.emit("Addon already added", "Cannot add this AddOn. This addon is already in your "
+                                                        "AddOns list.", 'warn')
             self.window.ui.buttonBox.setEnabled(True)
             return False
         else:
@@ -138,7 +136,9 @@ class AddonWindow(QDialog):
         else:
             message_box.setIcon(QMessageBox.Critical)
 
+        message_box.setWindowTitle("Hey Listen!")
         message_box.setStandardButtons(QMessageBox.Ok)
         message_box.setText(message)
         message_box.setInformativeText(inform)
+        message_box.setWindowIcon(QIcon(":/app/icon.ico"))
         message_box.exec()

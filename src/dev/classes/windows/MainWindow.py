@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
 from PyQt5.Qt import QSizePolicy
-from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem, QMovie
+from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem, QMovie, QIcon
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
 from src.dev.classes.windows.AddonWindow import AddonWindow
@@ -277,6 +277,7 @@ class MainWindow(QMainWindow):
         message_box.setWindowTitle("Hey Listen!")
         message_box.setText(message)
         message_box.setInformativeText(inform)
+        message_box.setWindowIcon(QIcon(":/app/icon.ico"))
         message_box.exec()
 
     def execute_check_updates(self):
