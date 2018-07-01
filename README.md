@@ -1,7 +1,7 @@
-# wow-addon-updater
+# WoW AddOn Updater
 AddOn updater for popular game World of Warcraft.
 
-# Building
+## Building
 Use the following `.spec` file to build the project to a single-file executable with PyInstaller
 ```
 # -*- mode: python -*-
@@ -9,7 +9,7 @@ Use the following `.spec` file to build the project to a single-file executable 
 block_cipher = None
 
 
-a = Analysis(['run.py'],
+a = Analysis(['src\\run.py'],
              pathex=['PATH_TO_REPO_DIRECTORY'],
              binaries=[],
              datas=[],
@@ -40,3 +40,6 @@ Be sure to change `pathex=['PATH_TO_REPO_DIRECTORY']` to the directory where the
 
 Command to build: 
 * `> pyinstaller ./run.spec`
+
+## Licensing
+This application is licensed under the [GNU General Public License v3.0](LICENSE).
