@@ -19,29 +19,22 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="0" colspan="2">
-     <widget class="QPushButton" name="btnCheckForUpdates">
+    <item row="3" column="0">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>0</width>
-        <height>40</height>
+        <width>300</width>
+        <height>0</height>
        </size>
       </property>
-      <property name="text">
-       <string>Check For Updates</string>
+      <property name="value">
+       <number>24</number>
       </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="QPushButton" name="btnRemoveAddon">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Remove Addon</string>
+      <property name="format">
+       <string>%v/%m</string>
       </property>
      </widget>
     </item>
@@ -126,22 +119,16 @@
       </widget>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
+    <item row="2" column="0" colspan="2">
+     <widget class="QPushButton" name="btnCheckForUpdates">
       <property name="minimumSize">
        <size>
-        <width>300</width>
-        <height>0</height>
+        <width>0</width>
+        <height>40</height>
        </size>
       </property>
-      <property name="value">
-       <number>24</number>
-      </property>
-      <property name="format">
-       <string>%v/%m</string>
+      <property name="text">
+       <string>Check For Updates</string>
       </property>
      </widget>
     </item>
