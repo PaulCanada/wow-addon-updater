@@ -79,6 +79,9 @@ class Addon(object):
             start_ind = content.find(web_type, content.find('project-file-list-item'))
             end_ind = content.find(">", start_ind)
             version = content[start_ind + len(web_type):end_ind].strip("\"")
+        else:
+            logging.critical("Invalid web_type given: {0}".format(web_type))
+            return None
 
         logging.info("Version: {0}".format(version))
 
