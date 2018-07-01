@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
             return
 
         if len(self.settings.data['addons']) == 0:
-            self.MessageBox.emit("No addons have been specified.",
+            self.MessageBox.emit("No AddOns have been specified.",
                                  "To add an addon, press 'Addon' -> 'Add Addon' and enter the URL of the addon.",
                                  "warn")
             return
@@ -310,12 +310,12 @@ class MainWindow(QMainWindow):
     def prompt_to_update(self, update_list):
 
         if update_list:
-            self.OutputUpdater.emit("Addons out of date:")
+            self.OutputUpdater.emit("AddOns out of date:")
             for addon in update_list:
                 self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name,
                                                                                             addon.current_version,
                                                                                             addon.latest_version))
-            message_box = QMessageBox.question(None, "Updates found.",
+            message_box = QMessageBox.question(None, "Updates found",
                                                "{0} update{1} found. Would you like to download {2} now?".format(
                                                    len(update_list),
                                                    "s" if len(update_list) > 1 else "",
@@ -325,12 +325,13 @@ class MainWindow(QMainWindow):
                 self.download_worker.start()
 
         else:
-            message_box = QMessageBox()
-            message_box.setWindowTitle("Checker")
-            message_box.setText("All addons are up to date!")
-            message_box.setStandardButtons(QMessageBox.Ok)
-
-            message_box.exec()
+            # message_box = QMessageBox()
+            # message_box.setWindowTitle("Checker")
+            # message_box.setText("All AddOns are up to date!")
+            self.OutputUpdater.emit("All AddOns are up to to date.")
+            # message_box.setStandardButtons(QMessageBox.Ok)
+            #
+            # message_box.exec()
 
     @pyqtSlot()
     def execute_download(self):
@@ -339,17 +340,15 @@ class MainWindow(QMainWindow):
         logging.info("Update list: {0}".format(to_update))
         self.LoadingGifSignal.emit(True)
         current_download_val = 1
-        max_download_value = len(to_update)
         download_failed_list = []
-        update_text = ''
 
         for addon in to_update:
-            self.SetUpdateCount.emit(current_download_val, max_download_value)
+            self.SetUpdateCount.emit(current_download_val, len(to_update))
 
             if not d.update_addon(addon):
                 download_failed_list.append(addon.name)
 
-            self.SetUpdateCount.emit(current_download_val, max_download_value)
+            self.SetUpdateCount.emit(current_download_val, len(to_update))
             current_download_val += 1
 
         self.LoadingGifSignal.emit(False)

@@ -97,7 +97,7 @@ class AddonWindow(QDialog):
         logging.info("Addon exists: {0}".format(exists))
 
         if exists:
-            self.MessageBox.emit("Addon already added", "This addon is already in your addons list.", 'warn')
+            self.MessageBox.emit("Addon already added", "This addon is already in your AddOns list.", 'warn')
             self.window.ui.buttonBox.setEnabled(True)
             return False
         else:
