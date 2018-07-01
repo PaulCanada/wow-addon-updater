@@ -21,7 +21,7 @@ class AboutWindow(QDialog):
 
         self.window.ui.lblGit.setText("Find an issue? Report it on the <a href=\"" +
                                       'https://github.com/PaulCanada/wow-addon-updater' +
-                                      "\"> " + 'GibHub Repository' + "</a>.")
+                                      "\"> " + 'GitHub Repository' + "</a>.")
 
         self.window.ui.lblLicense.setTextFormat(1)
         self.window.ui.lblLicense.setOpenExternalLinks(True)
