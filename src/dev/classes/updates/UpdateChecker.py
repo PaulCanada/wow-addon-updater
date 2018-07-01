@@ -9,9 +9,13 @@ class UpdateChecker(object):
 
     def check_for_updates(self):
         update_list = []
-        self.parent.UpdateProgressBarValue.emit(0)
-        self.parent.UpdateProgressBarMax.emit(len(self.parent.settings.data['addons']))
-        self.parent.window.ui.progressBar.setVisible(True)
+        current_update_val = 1
+        max_update_val = len(self.parent.settings.data['addons'])
+
+        # self.parent.UpdateProgressBarValue.emit(0)
+        # self.parent.UpdateProgressBarMax.emit(len(self.parent.settings.data['addons']))
+        # self.parent.window.ui.progressBar.setVisible(True)
+        self.parent.SetUpdateCount.emit(current_update_val, max_update_val)
 
         for key in self.parent.settings.data['addons']:
             current_addon = Addon(url=self.parent.settings.data['addons'][key]['url'],
@@ -35,8 +39,10 @@ class UpdateChecker(object):
 
             else:
                 logging.info("{0} is up to date.".format(self.parent.settings.data['addons'][key]['name']))
+            current_update_val += 1
 
-            self.parent.UpdateProgressBarValue.emit(self.parent.window.ui.progressBar.value() + 1)
+            # self.parent.UpdateProgressBarValue.emit(self.parent.window.ui.progressBar.value() + 1)
+            self.parent.SetUpdateCount.emit(current_update_val, max_update_val)
 
         self.parent.settings.files_to_update = update_list
         return update_list

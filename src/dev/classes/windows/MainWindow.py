@@ -41,10 +41,11 @@ class MainWindow(QMainWindow):
         MessageBox = pyqtSignal(str, str, str)
         UpdateTreeView = pyqtSignal()
         AddAddon = pyqtSignal(Addon, QTreeView, QStandardItemModel)
-        UpdateProgressBarValue = pyqtSignal(int)
-        UpdateProgressBarMax = pyqtSignal(int)
+        # UpdateProgressBarValue = pyqtSignal(int)
+        # UpdateProgressBarMax = pyqtSignal(int)
         RemoveAddon = pyqtSignal(str)
         LoadingGifSignal = pyqtSignal(bool)
+        SetUpdateCount = pyqtSignal(int, int)
 
     except Exception as e:
         print(e)
@@ -91,19 +92,20 @@ class MainWindow(QMainWindow):
         self.MessageBox.connect(self.show_message_box)
         self.UpdateTreeView.connect(self.update_tree_view)
         self.AddAddon.connect(self.add_addon_to_tree_view)
-        self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
-        self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
+        # self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
+        # self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
         self.RemoveAddon.connect(self.remove_addon)
         self.LoadingGifSignal.connect(self.toggle_loading_gif)
+        self.SetUpdateCount.connect(self.set_update_count_value)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
         self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
 
-        self.UpdateProgressBarMax.emit(10)
-        self.UpdateProgressBarValue.emit(0)
-        self.window.ui.progressBar.setVisible(False)
+        # self.UpdateProgressBarMax.emit(10)
+        # self.UpdateProgressBarValue.emit(0)
+        # self.window.ui.progressBar.setVisible(False)
 
         # Setting the header to hidden removes the drag bar for column width resizing.
         # self.window.ui.tviewAddons.setHeaderHidden(True)
@@ -119,8 +121,7 @@ class MainWindow(QMainWindow):
         self.window.ui.lblLoadingMovie.setMaximumHeight(50)
         self.window.ui.lblLoadingMovie.setScaledContents(True)
         self.window.ui.lblLoadingMovie.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.window.ui.lblLoadingMovie.setVisible(False)
-
+        self.window.ui.frameUpdate.setVisible(False)
 
     @pyqtSlot()
     def add_addon(self):
@@ -144,11 +145,17 @@ class MainWindow(QMainWindow):
     @pyqtSlot(bool)
     def toggle_loading_gif(self, enabled):
         if enabled:
+            self.window.ui.frameUpdate.setVisible(True)
+            self.window.ui.btnCheckForUpdates.setVisible(False)
             self.movie.start()
-            self.window.ui.lblLoadingMovie.setVisible(True)
         else:
+            self.window.ui.frameUpdate.setVisible(False)
+            self.window.ui.btnCheckForUpdates.setVisible(True)
             self.movie.stop()
-            self.window.ui.lblLoadingMovie.setVisible(False)
+
+    @pyqtSlot(int, int)
+    def set_update_count_value(self, current, max):
+        self.window.ui.lblCurrentUpdate.setText("( {0} out of {1} )".format(current, max))
 
     @pyqtSlot(int)
     def set_progress_bar_max(self, val):
@@ -323,11 +330,30 @@ class MainWindow(QMainWindow):
         to_update = self.settings.files_to_update
         logging.info("Update list: {0}".format(to_update))
         self.LoadingGifSignal.emit(True)
+        current_download_val = 1
+        max_download_value = len(to_update)
+        download_failed_list = []
+        update_text = ''
 
         for addon in to_update:
-            d.update_addon(addon)
+            self.SetUpdateCount.emit(current_download_val, max_download_value)
+
+            if not d.update_addon(addon):
+                download_failed_list.append(addon.name)
+
+            self.SetUpdateCount.emit(current_download_val, max_download_value)
+            current_download_val += 1
 
         self.LoadingGifSignal.emit(False)
+
+        # If downloads failed, tell the user.
+        if download_failed_list:
+            update_text = "The following AddOns failed to download: {0}".format(download_failed_list)
+
+            self.MessageBox.emit("Status", update_text, "warn")
+        else:
+            update_text = "All AddOns were downloaded and extracted successfully to AddOns folder."
+            self.MessageBox.emit("Complete", update_text, "inform")
 
 
 def main():
