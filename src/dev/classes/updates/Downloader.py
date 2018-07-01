@@ -75,7 +75,8 @@ class Downloader(object):
                     self.parent.settings.save_config()
                     self.parent.settings.load_config()
 
-                    if self.parent.settings.data['settings']['remove_old_archive']:
+                    if self.parent.settings.data['settings']['remove_old_archive'] \
+                            and addon.current_version != 'Unknown':
                         try:
                             os.remove(old_archive_file)
                         except Exception as file_error:
