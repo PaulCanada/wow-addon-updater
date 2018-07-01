@@ -27,10 +27,12 @@ class SettingsWindow(QDialog):
     def load_settings(self):
         self.window.ui.leditWowDirectory.setText(self.parent.settings.data['settings']['wow_dir'])
         self.window.ui.cboxPromptToClose.setChecked(self.parent.settings.data['settings']['prompt_to_close'])
+        self.window.ui.cboxReplaceArchive.setChecked(self.parent.settings.data['settings']['remove_old_archive'])
 
     def save_settings(self):
         self.parent.settings.data['settings']['wow_dir'] = self.window.ui.leditWowDirectory.text()
         self.parent.settings.data['settings']['prompt_to_close'] = self.window.ui.cboxPromptToClose.isChecked()
+        self.parent.settings.data['settings']['remove_old_archive'] = self.window.ui.cboxReplaceArchive.isChecked()
         self.parent.settings.save_config()
         self.parent.settings.load_config()
 

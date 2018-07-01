@@ -78,10 +78,10 @@ class Ui_About(object):
         _translate = QtCore.QCoreApplication.translate
         About.setWindowTitle(_translate("About", "About"))
         self.lblHeader.setText(_translate("About", "WoW Addon Updater"))
-        self.lblInfo.setText(_translate("About", "Unnoficial AddOn updater for popular the game World of Warcraft."))
+        self.lblInfo.setText(_translate("About", "Unofficial AddOn updater for the popular game World of Warcraft."))
         self.label.setText(_translate("About", "Made by Paul Canada, 2018"))
         self.lblLicense.setText(_translate("About", "This application is licensed under GNU v3."))
-        self.lblGit.setText(_translate("About", "Find an issue? Report it on the GibHub Repository."))
+        self.lblGit.setText(_translate("About", "Find an issue? Report it on the GitHub Repository."))
 
 import icons_rc
 

@@ -85,7 +85,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Unnoficial AddOn updater for popular the game World of Warcraft.</string>
+      <string>Unofficial AddOn updater for the popular game World of Warcraft.</string>
      </property>
     </widget>
    </item>
@@ -153,7 +153,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Find an issue? Report it on the GibHub Repository.</string>
+      <string>Find an issue? Report it on the GitHub Repository.</string>
      </property>
     </widget>
    </item>

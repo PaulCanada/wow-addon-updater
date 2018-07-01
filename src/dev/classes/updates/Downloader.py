@@ -33,6 +33,9 @@ class Downloader(object):
                                                                                  os.path.abspath(self.zip_dir)))
         response, file_dir = self.download_from_url(addon)
 
+        old_archive_file_name = addon.name.replace(":", "_") + '_' + addon.current_version
+        old_archive_file = self.zip_dir + '/' + old_archive_file_name + '.zip'
+
         if file_dir == '':
             self.parent.OutputUpdater.emit("Download failed: bad URL.")
             return False
@@ -71,6 +74,14 @@ class Downloader(object):
 
                     self.parent.settings.save_config()
                     self.parent.settings.load_config()
+
+                    if self.parent.settings.data['settings']['remove_old_archive'] \
+                            and addon.current_version != 'Unknown':
+                        try:
+                            os.remove(old_archive_file)
+                        except Exception as file_error:
+                            logging.critical("Failed to remove archive {0}: {1}".format(old_archive_file,
+                                                                                        str(file_error)))
 
         except Exception as ze:
             logging.critical("Error unzipping addon: {0}".format(ze))

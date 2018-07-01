@@ -44,6 +44,9 @@ class Ui_Settings(object):
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.cboxPromptToClose)
         spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.formLayout.setItem(2, QtWidgets.QFormLayout.LabelRole, spacerItem)
+        self.cboxReplaceArchive = QtWidgets.QCheckBox(self.frame)
+        self.cboxReplaceArchive.setObjectName("cboxReplaceArchive")
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.SpanningRole, self.cboxReplaceArchive)
         self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.frame)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -65,6 +68,7 @@ class Ui_Settings(object):
         self.lblWowDirectory.setText(_translate("Settings", "WoW Directory:"))
         self.btnBrowseWowDirectory.setText(_translate("Settings", "Browse..."))
         self.cboxPromptToClose.setText(_translate("Settings", "Prompt to close on application exit"))
+        self.cboxReplaceArchive.setText(_translate("Settings", "Replace downloaded archive file "))
         self.btnApply.setText(_translate("Settings", "Apply"))
 
 import icons_rc
