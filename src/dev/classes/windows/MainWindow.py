@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel, QTreeView, QPushButton
-from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem
+from PyQt5.Qt import QSizePolicy
+from PyQt5.QtGui import QTextCursor, QStandardItemModel, QStandardItem, QMovie
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QItemSelectionModel
 from src.gui_py.main_window_gui import Ui_MainWindow
 from src.dev.classes.windows.AddonWindow import AddonWindow
@@ -11,6 +12,7 @@ from src.dev.classes.application.Settings import Settings
 from src.dev.classes.updates.Downloader import Downloader
 from src.dev.classes.updates.UpdateChecker import UpdateChecker
 import logging
+import src.icons_rc
 
 HANDLE_STYLE = """
 QSplitter::handle:horizontal {
@@ -42,6 +44,7 @@ class MainWindow(QMainWindow):
         UpdateProgressBarValue = pyqtSignal(int)
         UpdateProgressBarMax = pyqtSignal(int)
         RemoveAddon = pyqtSignal(str)
+        LoadingGifSignal = pyqtSignal(bool)
 
     except Exception as e:
         print(e)
@@ -55,6 +58,7 @@ class MainWindow(QMainWindow):
         self.app = QApplication(sys.argv)
 
         self.settings = Settings()
+        self.movie = QMovie(":/app/loading_icon.gif")
 
         self.download_worker = Worker(self.execute_download)
         self.update_worker = Worker(self.execute_check_updates)
@@ -90,6 +94,7 @@ class MainWindow(QMainWindow):
         self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
         self.RemoveAddon.connect(self.remove_addon)
+        self.LoadingGifSignal.connect(self.toggle_loading_gif)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
@@ -110,6 +115,12 @@ class MainWindow(QMainWindow):
 
         self.window.ui.tviewAddons.setColumnWidth(0, 300)
 
+        self.window.ui.lblLoadingMovie.setMovie(self.movie)
+        self.window.ui.lblLoadingMovie.setMaximumHeight(50)
+        self.window.ui.lblLoadingMovie.setScaledContents(True)
+        self.window.ui.lblLoadingMovie.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.window.ui.lblLoadingMovie.setVisible(False)
+
 
     @pyqtSlot()
     def add_addon(self):
@@ -129,6 +140,15 @@ class MainWindow(QMainWindow):
     @pyqtSlot(int)
     def set_progress_bar_value(self, val):
         self.window.ui.progressBar.setValue(val)
+
+    @pyqtSlot(bool)
+    def toggle_loading_gif(self, enabled):
+        if enabled:
+            self.movie.start()
+            self.window.ui.lblLoadingMovie.setVisible(True)
+        else:
+            self.movie.stop()
+            self.window.ui.lblLoadingMovie.setVisible(False)
 
     @pyqtSlot(int)
     def set_progress_bar_max(self, val):
@@ -261,7 +281,10 @@ class MainWindow(QMainWindow):
         self.OutputUpdater.emit("Checking for updates...")
 
         updater = UpdateChecker(self)
+        self.LoadingGifSignal.emit(True)
+
         update_list = updater.check_for_updates()
+        self.LoadingGifSignal.emit(False)
 
         self.window.ui.btnCheckForUpdates.setText("Check For Updates")
         self.window.ui.btnCheckForUpdates.setEnabled(True)
@@ -299,9 +322,12 @@ class MainWindow(QMainWindow):
         d = Downloader(self)
         to_update = self.settings.files_to_update
         logging.info("Update list: {0}".format(to_update))
+        self.LoadingGifSignal.emit(True)
 
         for addon in to_update:
             d.update_addon(addon)
+
+        self.LoadingGifSignal.emit(False)
 
 
 def main():

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="app">
     <file>icon.ico</file>
+    <file>loading_icon.gif</file>
   </qresource>
 </RCC>
