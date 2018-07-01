@@ -106,7 +106,7 @@ venv.bak/
 # PyCharm
 *.xml
 build/
-dist/
+dist/config
 Addons/
 config/
 *.iml
