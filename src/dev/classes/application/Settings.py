@@ -23,7 +23,7 @@ class Settings(object):
             logging.info("Config directory exists.")
 
         if not os.path.exists(config_path):
-            self.data['settings'] = {'wow_dir': '', 'prompt_to_close': True}
+            self.data['settings'] = {'wow_dir': '', 'prompt_to_close': True, "remove_old_archive": True}
             self.data['addons'] = {}
 
             logging.info("Creating config.json file.")
@@ -51,6 +51,10 @@ class Settings(object):
 
         if 'prompt_to_close' not in self.data['settings']:
             self.data['settings']['prompt_to_close'] = True
+            self.save_config()
+
+        if 'remove_old_archive' not in self.data['settings']:
+            self.data['settings']['remove_old_archive'] = True
             self.save_config()
 
         if 'addons' not in self.data:
