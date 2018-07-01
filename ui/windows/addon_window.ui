@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>AddonWindow</class>
+ <widget class="QWidget" name="AddonWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,10 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Add an AddOn</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qrc/icons.qrc">
+   <iconset resource="../../qrc/resources/icons.qrc">
     <normaloff>:/app/icon.ico</normaloff>:/app/icon.ico</iconset>
   </property>
   <layout class="QFormLayout" name="formLayout">
@@ -51,7 +51,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../qrc/icons.qrc"/>
+  <include location="../../qrc/resources/icons.qrc"/>
  </resources>
  <connections/>
 </ui>
