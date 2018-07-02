@@ -33,7 +33,6 @@ class Settings(object):
             self.save_config()
 
         if not os.path.exists(config_path + addons_file_name):
-            print("F.")
             self.addons['addons'] = {}
             logging.info("Creating addons.json file.")
 
@@ -69,6 +68,15 @@ class Settings(object):
 
         if 'addons' not in self.addons:
             self.addons['addons'] = ""
+            self.save_addons()
+
+        # Check if addon information is in the config.json file.
+        if 'addons' in self.config:
+            print("Addons in config.")
+
+            self.addons['addons'] = self.config['addons']
+            self.config.pop('addons', None)
+            self.save_config()
             self.save_addons()
 
     def write_addon_info(self, key, info):
