@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def closeEvent(self, event):
-        if self.settings.data['settings']['prompt_to_close']:
+        if self.settings.config['settings']['prompt_to_close']:
             prompt = QMessageBox.question(self, 'Confirmation', 'Are you sure you want to quit?',
                                           QMessageBox.Yes, QMessageBox.No)
 
@@ -223,17 +223,17 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def remove_addon(self, addon_name):
-        if addon_name not in self.settings.data['addons']:
+        if addon_name not in self.settings.addons['addons']:
             return
 
         message_box = QMessageBox.question(None, "Confirmation",
                                            "Are you sure you want to remove {0}?".format(addon_name),
                                            QMessageBox.Yes, QMessageBox.No)
         if message_box == QMessageBox.Yes:
-            del self.settings.data['addons'][addon_name]
+            del self.settings.addons['addons'][addon_name]
             # print(self.settings.data.pop(key, None))
-            self.settings.save_config()
-            self.settings.load_config()
+            self.settings.save_addons()
+            self.settings.load_addons()
 
             index = self.window.ui.tviewAddons.selectionModel().selectedRows()[0]
             parent = index.parent()
@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def update_tree_view(self):
-        tree_data = self.settings.data['addons']
+        tree_data = self.settings.addons['addons']
         logging.debug("Tree view data: {0}".format(tree_data))
 
         # No addons are loaded.
@@ -285,14 +285,14 @@ class MainWindow(QMainWindow):
         if not self.settings.check_for_wow_directory(self):
             return
 
-        if len(self.settings.data['addons']) == 0:
+        if len(self.settings.addons['addons']) == 0:
             self.MessageBox.emit("No AddOns have been specified.",
                                  "To add an addon, press 'Addon' -> 'Add Addon' and enter the URL of the addon.",
                                  "warn")
             return
 
         self.window.ui.btnCheckForUpdates.setText("Checking {0} Addons For Updates...".format(
-            len(self.settings.data['addons'])))
+            len(self.settings.addons['addons'])))
         self.window.ui.btnCheckForUpdates.setDisabled(True)
         self.OutputUpdater.emit("Checking for updates...")
 

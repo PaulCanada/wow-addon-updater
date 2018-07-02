@@ -25,14 +25,14 @@ class SettingsWindow(QDialog):
         self.load_settings()
 
     def load_settings(self):
-        self.window.ui.leditWowDirectory.setText(self.parent.settings.data['settings']['wow_dir'])
-        self.window.ui.cboxPromptToClose.setChecked(self.parent.settings.data['settings']['prompt_to_close'])
-        self.window.ui.cboxReplaceArchive.setChecked(self.parent.settings.data['settings']['remove_old_archive'])
+        self.window.ui.leditWowDirectory.setText(self.parent.settings.config['settings']['wow_dir'])
+        self.window.ui.cboxPromptToClose.setChecked(self.parent.settings.config['settings']['prompt_to_close'])
+        self.window.ui.cboxReplaceArchive.setChecked(self.parent.settings.config['settings']['remove_old_archive'])
 
     def save_settings(self):
-        self.parent.settings.data['settings']['wow_dir'] = self.window.ui.leditWowDirectory.text()
-        self.parent.settings.data['settings']['prompt_to_close'] = self.window.ui.cboxPromptToClose.isChecked()
-        self.parent.settings.data['settings']['remove_old_archive'] = self.window.ui.cboxReplaceArchive.isChecked()
+        self.parent.settings.config['settings']['wow_dir'] = self.window.ui.leditWowDirectory.text()
+        self.parent.settings.config['settings']['prompt_to_close'] = self.window.ui.cboxPromptToClose.isChecked()
+        self.parent.settings.config['settings']['remove_old_archive'] = self.window.ui.cboxReplaceArchive.isChecked()
         self.parent.settings.save_config()
         self.parent.settings.load_config()
 
@@ -60,7 +60,7 @@ class SettingsWindow(QDialog):
             return
 
         self.window.ui.leditWowDirectory.setText(file_name)
-        settings.data['settings']['wow_dir'] = file_name
+        settings.config['settings']['wow_dir'] = file_name
 
 
 def open_file_dialog(title):

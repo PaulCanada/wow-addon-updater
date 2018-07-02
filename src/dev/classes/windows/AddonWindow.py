@@ -102,22 +102,20 @@ class AddonWindow(QDialog):
                           'current_version': 'Unknown',
                           'latest_version': current_addon.latest_version}
 
-            self.settings.write_addon_info('addons', current_addon.name, addon_dict)
-            self.settings.save_config()
-            self.settings.load_config()
+            self.settings.write_addon_info(current_addon.name, addon_dict)
 
             self.parent.MessageBox.emit("Addon information added.", "", 'inform')
             self.window.ui.leditAddonUrl.setText("")
 
             # Save and load the config.
-            self.settings.save_config()
-            self.settings.load_config()
+            self.settings.save_addons()
+            self.settings.load_addons()
             self.parent.AddAddon.emit(current_addon, self.parent.window.ui.tviewAddons, self.parent.model)
             self.window.ui.buttonBox.setEnabled(True)
             return True
 
     def check_if_addon_in_config(self, addon):
-        if addon.name in self.settings.data['addons']:
+        if addon.name in self.settings.addons['addons']:
             return True
         else:
             return False

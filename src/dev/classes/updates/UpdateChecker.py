@@ -10,17 +10,17 @@ class UpdateChecker(object):
     def check_for_updates(self):
         update_list = []
         current_update_val = 1
-        max_update_val = len(self.parent.settings.data['addons'])
+        max_update_val = len(self.parent.settings.addons['addons'])
 
         # self.parent.UpdateProgressBarValue.emit(0)
         # self.parent.UpdateProgressBarMax.emit(len(self.parent.settings.data['addons']))
         # self.parent.window.ui.progressBar.setVisible(True)
         self.parent.SetUpdateCount.emit(current_update_val, max_update_val)
 
-        for key in self.parent.settings.data['addons']:
-            current_addon = Addon(url=self.parent.settings.data['addons'][key]['url'],
-                                  name=self.parent.settings.data['addons'][key]['name'],
-                                  current_version=self.parent.settings.data['addons'][key]['current_version'])
+        for key in self.parent.settings.addons['addons']:
+            current_addon = Addon(url=self.parent.settings.addons['addons'][key]['url'],
+                                  name=self.parent.settings.addons['addons'][key]['name'],
+                                  current_version=self.parent.settings.addons['addons'][key]['current_version'])
 
             print("Current ver: {0}".format(current_addon.current_version))
             print("Latest ver: {0}".format(current_addon.latest_version))
@@ -30,15 +30,15 @@ class UpdateChecker(object):
             current_addon.latest_version = current_addon.get_update_version()
 
             if current_addon.current_version != current_addon.latest_version:
-                logging.info("{0} is out of date!".format(self.parent.settings.data['addons'][key]['name']))
+                logging.info("{0} is out of date!".format(self.parent.settings.addons['addons'][key]['name']))
                 update_list.append(current_addon)
 
-                self.parent.settings.data['addons'][key]['latest_version'] = current_addon.latest_version
-                self.parent.settings.save_config()
-                self.parent.settings.load_config()
+                self.parent.settings.addons['addons'][key]['latest_version'] = current_addon.latest_version
+                self.parent.settings.save_addons()
+                self.parent.settings.load_addons()
 
             else:
-                logging.info("{0} is up to date.".format(self.parent.settings.data['addons'][key]['name']))
+                logging.info("{0} is up to date.".format(self.parent.settings.addons['addons'][key]['name']))
             current_update_val += 1
 
             # self.parent.UpdateProgressBarValue.emit(self.parent.window.ui.progressBar.value() + 1)
