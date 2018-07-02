@@ -3,16 +3,20 @@ import os
 import logging
 from sortedcontainers import sorteddict
 
-config_path = './config/config.json'
+config_path = './config/'
+config_file_name = 'config.json'
+addons_file_name = 'addons.json'
 
 
 class Settings(object):
 
     def __init__(self):
-        self.data = sorteddict.SortedDict()
+        self.config = sorteddict.SortedDict()
+        self.addons = sorteddict.SortedDict()
         self.initialize_data()
         self.files_to_update = []
         self.load_config()
+        self.load_addons()
         self.check_retro()
 
     def initialize_data(self):
@@ -22,16 +26,22 @@ class Settings(object):
         else:
             logging.info("Config directory exists.")
 
-        if not os.path.exists(config_path):
-            self.data['settings'] = {'wow_dir': '', 'prompt_to_close': True, "remove_old_archive": True}
-            self.data['addons'] = {}
+        if not os.path.exists(config_path + config_file_name):
+            self.config['settings'] = {'wow_dir': '', 'prompt_to_close': True, "remove_old_archive": True}
 
             logging.info("Creating config.json file.")
             self.save_config()
 
+        if not os.path.exists(config_path + addons_file_name):
+            print("F.")
+            self.addons['addons'] = {}
+            logging.info("Creating addons.json file.")
+
+            self.save_addons()
+
     def check_for_wow_directory(self, parent):
 
-        if self.data['settings']['wow_dir'] == '':
+        if self.config['settings']['wow_dir'] == '':
             parent.MessageBox.emit("Addons directory not found.",
                                    "Please specify the directory where you want the addons to be downloaded to in "
                                    "the Settings window." 
@@ -42,40 +52,48 @@ class Settings(object):
         return True
 
     def check_retro(self):
-        if 'settings' not in self.data:
-            self.data['settings'] = {}
+        if 'settings' not in self.config:
+            self.config['settings'] = {}
 
-        if 'wow_dir' not in self.data['settings']:
-            self.data['settings']['wow_dir'] = ""
+        if 'wow_dir' not in self.config['settings']:
+            self.config['settings']['wow_dir'] = ""
             self.save_config()
 
-        if 'prompt_to_close' not in self.data['settings']:
-            self.data['settings']['prompt_to_close'] = True
+        if 'prompt_to_close' not in self.config['settings']:
+            self.config['settings']['prompt_to_close'] = True
             self.save_config()
 
-        if 'remove_old_archive' not in self.data['settings']:
-            self.data['settings']['remove_old_archive'] = True
+        if 'remove_old_archive' not in self.config['settings']:
+            self.config['settings']['remove_old_archive'] = True
             self.save_config()
 
-        if 'addons' not in self.data:
-            self.data['addons'] = ""
-            self.save_config()
+        if 'addons' not in self.addons:
+            self.addons['addons'] = ""
+            self.save_addons()
 
-    def write_addon_info(self, primary_key, key, info):
-        self.data[primary_key][key] = info
+    def write_addon_info(self, key, info):
+        self.addons['addons'][key] = info
 
     def load_config(self):
-        with open(config_path, 'r') as f:
-            self.data = simplejson.loads(f.read())
+        with open(config_path + config_file_name, 'r') as f:
+            self.config = simplejson.loads(f.read())
+
+    def load_addons(self):
+        with open(config_path + addons_file_name, 'r') as f:
+            self.addons = simplejson.loads(f.read())
 
     def save_config(self):
-        self.data['addons'] = {k: self.data['addons'][k] for k in sorted(self.data['addons'])}
+        with open(config_path + config_file_name, 'w') as f:
+            f.write(simplejson.dumps(self.config, indent=4, ensure_ascii=True))
 
-        with open(config_path, 'w') as f:
-            f.write(simplejson.dumps(self.data, indent=4, ensure_ascii=True))
+    def save_addons(self):
+        self.addons['addons'] = {k: self.addons['addons'][k] for k in sorted(self.addons['addons'])}
+
+        with open(config_path + addons_file_name, 'w') as f:
+            f.write(simplejson.dumps(self.addons, indent=4, ensure_ascii=True))
 
     def get_settings_keys(self):
-        for key in self.data['addons']:
+        for key in self.addons['addons']:
             print(key)
 
 
