@@ -54,12 +54,12 @@ class Downloader(object):
         self.parent.OutputUpdater.emit("Extracting files to {0}".format(file_dir))
         try:
             zipper = zipfile.ZipFile(file_dir, 'r')
-            zipper.extractall(self.parent.settings.data['settings']['wow_dir'] + '/')
+            zipper.extractall(self.parent.settings.config['settings']['wow_dir'] + '/')
             zipper.close()
             self.parent.OutputUpdater.emit("Extraction complete.")
 
             # Set the addon's current version to the latest.
-            for key in self.parent.settings.data['addons']:
+            for key in self.parent.settings.addons['addons']:
                 logging.debug("Key: {0}".format(str(key)))
                 logging.debug("Item name: {0}".format(addon.name))
                 logging.debug("Transformed name: {0}".format(addon.name.title().replace("-", " ").replace("_", " ")))
@@ -68,14 +68,14 @@ class Downloader(object):
                 if str(key) == addon.name:
                     logging.debug("Addon found for key!")
                     logging.debug("Item's latest version: {0}".format(addon.latest_version))
-                    self.parent.settings.data['addons'][key]['current_version'] = addon.latest_version
+                    self.parent.settings.addons['addons'][key]['current_version'] = addon.latest_version
                     logging.debug("New current version: {0}".format(
-                        self.parent.settings.data['addons'][key]['current_version']))
+                        self.parent.settings.addons['addons'][key]['current_version']))
 
-                    self.parent.settings.save_config()
-                    self.parent.settings.load_config()
+                    self.parent.settings.save_addons()
+                    self.parent.settings.load_addons()
 
-                    if self.parent.settings.data['settings']['remove_old_archive'] \
+                    if self.parent.settings.config['settings']['remove_old_archive'] \
                             and addon.current_version != 'Unknown':
                         try:
                             os.remove(old_archive_file)
