@@ -117,6 +117,7 @@ class MainWindow(QMainWindow):
 
         self.settings.check_for_wow_directory(self)
         self.window.ui.label.setHidden(True)
+        self.window.ui.btnDownloadUpdates.setHidden(True)
 
         self.window.ui.tviewAddons.setColumnWidth(0, 300)
 
