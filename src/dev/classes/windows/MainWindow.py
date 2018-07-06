@@ -71,7 +71,6 @@ class MainWindow(QMainWindow):
         self.window.ui.actionClose.triggered.connect(self.close)
         self.window.ui.actionAbout.triggered.connect(self.open_about_window)
 
-
         self.init_ui()
 
     def closeEvent(self, event):
@@ -104,6 +103,7 @@ class MainWindow(QMainWindow):
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
+        self.window.ui.btnDownloadUpdates.clicked.connect(self.download_worker.start)
         self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
 
         # self.UpdateProgressBarMax.emit(10)
@@ -306,12 +306,14 @@ class MainWindow(QMainWindow):
         self.window.ui.btnCheckForUpdates.setText("Check For Updates")
         self.window.ui.btnCheckForUpdates.setEnabled(True)
 
-        self.PromptUpdate.emit(update_list)
+        if update_list:
+            self.PromptUpdate.emit(update_list)
 
     @pyqtSlot(list)
     def prompt_to_update(self, update_list):
 
         if update_list:
+            self.window.ui.btnDownloadUpdates.setVisible(True)
             self.OutputUpdater.emit("AddOns out of date:")
             for addon in update_list:
                 self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name,
@@ -363,6 +365,8 @@ class MainWindow(QMainWindow):
         else:
             update_text = "All AddOns were downloaded and extracted successfully to AddOns folder."
             self.MessageBox.emit("Complete", update_text, "inform")
+
+        self.window.ui.btnDownloadUpdates.setVisible(False)
 
 
 def main():
