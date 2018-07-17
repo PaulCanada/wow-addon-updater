@@ -10,6 +10,7 @@ class Addon(object):
 
     curse_project_locator = 'data-name='
     curse_addon_locator = 'file__name full">'
+    wow_ace_locator = ''
     tukui_locator = 'downloads/'
 
     def __init__(self, url='', name='', current_version='', latest_version=''):
@@ -63,29 +64,53 @@ class Addon(object):
 
         content = str(page.content)
         logging.debug("Content of page: {0}".format(content))
-        start_ind = content.find(web_type)
 
-        # If downloading from Tukui
-        if web_type == self.tukui_locator:
-            end_ind = content.find(".zip", start_ind + len(web_type))
-            version = content[start_ind + len(web_type):end_ind]
-        # If downloading from Curse Addons
-        elif web_type == self.curse_addon_locator:
-            start_ind = content.find(web_type) + len(web_type)
-            end_ind = content.find("<", start_ind)
-            version = content[start_ind:end_ind]
-        # If downloading from Curse Projects (this seems to be the standard)
-        elif web_type == self.curse_project_locator:
-            start_ind = content.find(web_type, content.find('project-file-list-item'))
-            end_ind = content.find(">", start_ind)
-            version = content[start_ind + len(web_type):end_ind].strip("\"")
-        else:
-            logging.critical("Invalid web_type given: {0}".format(web_type))
-            return None
+        return {
+            self.curse_addon_locator: self.get_curse_addons_ver(content),
+            self.curse_project_locator: self.get_curse_projects_ver(content),
+            self.tukui_locator: self.get_tukui_ver(content)
+        }.get(web_type, None)
+        #
+        # # If downloading from Tukui
+        # if web_type == self.tukui_locator:
+        #     self.get_tukui_ver()
+        # # If downloading from Curse Addons
+        # elif web_type == self.curse_addon_locator:
+        #     self.get_curse_addons_ver(content)
+        # # If downloading from Curse Projects (this seems to be the standard)
+        # elif web_type == self.curse_project_locator:
+        #     self.get_curse_projects_ver(content)
+        # else:
+        #     logging.critical("Invalid web_type given: {0}".format(web_type))
+        #     return None
+        #
+        # logging.info("Version: {0}".format(version))
+        #
+        # return version
 
-        logging.info("Version: {0}".format(version))
+    def get_curse_addons_ver(self, content):
+        start_ind = content.find(self.curse_addon_locator) + len(self.curse_addon_locator)
+        end_ind = content.find("<", start_ind)
+        version = content[start_ind:end_ind]
 
         return version
+
+    def get_curse_projects_ver(self, content):
+        start_ind = content.find(self.curse_project_locator, content.find('project-file-list-item'))
+        end_ind = content.find(">", start_ind)
+        version = content[start_ind + len(self.curse_project_locator):end_ind].strip("\"")
+
+        return version
+
+    def get_tukui_ver(self, content):
+        start_ind = content.find(self.tukui_locator)
+        end_ind = content.find(".zip", start_ind + len(self.tukui_locator))
+        version = content[start_ind + len(self.tukui_locator):end_ind]
+
+        return version
+
+    def get_wow_ace_ver(self, content):
+        pass
 
     def get_name(self):
         url = self.url
@@ -138,6 +163,8 @@ class Addon(object):
             return None
         elif 'tukui.org' in self.url:
             return 'tukui'
+        elif 'wowace.com' in self.url:
+            return 'wow-ace'
         else:
             logging.critical("Could not determine website type.")
             return None
@@ -153,7 +180,7 @@ if __name__ == '__main__':
     a = Addon(url="https://www.curseforge.com/wow/addons/pettracker")
     # a = Addon(url="http://www.google.com")
     a.get_name()
-
+# https://www.wowace.com/projects/silver-dragon
     #
     # print("modified addon: {0}".format(a.url))
     # if not a.valid_url:
