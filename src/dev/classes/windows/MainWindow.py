@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         # UpdateProgressBarValue = pyqtSignal(int)
         # UpdateProgressBarMax = pyqtSignal(int)
         RemoveAddon = pyqtSignal(str)
+        ForceUpdateAddon = pyqtSignal(Addon)
         LoadingGifSignal = pyqtSignal(bool)
         SetUpdateCount = pyqtSignal(int, int)
 
@@ -70,7 +71,6 @@ class MainWindow(QMainWindow):
 
         self.window.ui.actionClose.triggered.connect(self.close)
         self.window.ui.actionAbout.triggered.connect(self.open_about_window)
-
 
         self.init_ui()
 
@@ -98,12 +98,14 @@ class MainWindow(QMainWindow):
         # self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         # self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
         self.RemoveAddon.connect(self.remove_addon)
+        self.ForceUpdateAddon.connect(self.force_update_addon)
         self.LoadingGifSignal.connect(self.toggle_loading_gif)
         self.SetUpdateCount.connect(self.set_update_count_value)
 
         self.window.ui.actionAddAddon.triggered.connect(self.OpenAddonAdder.emit)
         self.window.ui.actionSettings.triggered.connect(self.OpenSettingsWindow.emit)
         self.window.ui.btnCheckForUpdates.clicked.connect(self.update_worker.start)
+        self.window.ui.btnDownloadUpdates.clicked.connect(self.download_worker.start)
         self.window.ui.actionUpdateTreeView.triggered.connect(self.UpdateTreeView.emit)
 
         # self.UpdateProgressBarMax.emit(10)
@@ -117,6 +119,7 @@ class MainWindow(QMainWindow):
 
         self.settings.check_for_wow_directory(self)
         self.window.ui.label.setHidden(True)
+        self.window.ui.btnDownloadUpdates.setHidden(True)
 
         self.window.ui.tviewAddons.setColumnWidth(0, 300)
 
@@ -178,6 +181,7 @@ class MainWindow(QMainWindow):
 
         url_item = QStandardItem()
         remove_addon_item = QStandardItem()
+        update_addon_item = QStandardItem()
 
         # Create a QLabel to allow following hyperlinks in the table.
         url_label = QLabel()
@@ -191,8 +195,14 @@ class MainWindow(QMainWindow):
         remove_addon_button.clicked.connect(lambda: self.RemoveAddon.emit(addon.name))
         remove_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
 
+        update_addon_button = QPushButton()
+        update_addon_button.setText("Force Update {0}".format(addon.name))
+        update_addon_button.clicked.connect(lambda: self.ForceUpdateAddon.emit(addon))
+        update_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
+
         curr_ver_item = QStandardItem(addon.current_version)
         latest_ver_item = QStandardItem(addon.latest_version)
+        update_date_item = QStandardItem(addon.last_update_date)
 
         logging.debug("Parent item: {0}".format(addon.name))
 
@@ -202,6 +212,8 @@ class MainWindow(QMainWindow):
         curr_ver_item_identifier = QStandardItem("Current Version: ")
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
         remove_addon_item_identifier = QStandardItem("Remove Addon: ")
+        update_date_item_identifier = QStandardItem("Date Updated: ")
+        force_update_identifier = QStandardItem("Update: ")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -211,9 +223,13 @@ class MainWindow(QMainWindow):
 
         parent_item.appendRow([curr_ver_item_identifier, curr_ver_item])
         parent_item.appendRow([latest_ver_item_identifier, latest_ver_item])
+        parent_item.appendRow([update_date_item_identifier, update_date_item])
 
         parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
         self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
+
+        parent_item.appendRow([force_update_identifier, update_addon_item])
+        self.window.ui.tviewAddons.setIndexWidget(update_addon_item.index(), update_addon_button)
 
         # self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
@@ -242,6 +258,21 @@ class MainWindow(QMainWindow):
                                                                         QItemSelectionModel.ClearAndSelect)
             self.model.removeRow(parent.row())
 
+    @pyqtSlot(Addon)
+    def force_update_addon(self, addon):
+        if addon.name not in self.settings.addons['addons']:
+            return
+
+        message_box = QMessageBox.question(None, "Confirmation",
+                                           "Are you sure you want to force update {0}?".format(addon.name),
+                                           QMessageBox.Yes, QMessageBox.No)
+
+        if message_box == QMessageBox.Yes:
+            addon.addon_source = addon.get_website_type()
+            self.settings.files_to_update = [addon]
+            # self.DownloadStart.emit()
+            self.download_worker.start()
+
     @pyqtSlot()
     def update_tree_view(self):
         tree_data = self.settings.addons['addons']
@@ -256,7 +287,8 @@ class MainWindow(QMainWindow):
 
         for parent_name in tree_data:
             current_addon = Addon(tree_data[parent_name]['url'], tree_data[parent_name]['name'],
-                                  tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'])
+                                  tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'],
+                                  tree_data[parent_name]['last_update_date'])
 
             self.AddAddon.emit(current_addon, self.tree_model, self.model)
 
@@ -305,12 +337,14 @@ class MainWindow(QMainWindow):
         self.window.ui.btnCheckForUpdates.setText("Check For Updates")
         self.window.ui.btnCheckForUpdates.setEnabled(True)
 
+        # if update_list:
         self.PromptUpdate.emit(update_list)
 
     @pyqtSlot(list)
     def prompt_to_update(self, update_list):
 
         if update_list:
+            self.window.ui.btnDownloadUpdates.setVisible(True)
             self.OutputUpdater.emit("AddOns out of date:")
             for addon in update_list:
                 self.OutputUpdater.emit("\n{0}: \n\tCurrent version: {1} \n\tNew version:      {2}\n".format(addon.name,
@@ -329,7 +363,7 @@ class MainWindow(QMainWindow):
             # message_box = QMessageBox()
             # message_box.setWindowTitle("Checker")
             # message_box.setText("All AddOns are up to date!")
-            self.OutputUpdater.emit("All AddOns are up to to date.")
+            self.OutputUpdater.emit("\nAll AddOns are currently up to to date.")
             # message_box.setStandardButtons(QMessageBox.Ok)
             #
             # message_box.exec()
@@ -338,10 +372,15 @@ class MainWindow(QMainWindow):
     def execute_download(self):
         d = Downloader(self)
         to_update = self.settings.files_to_update
+
+        for addon in to_update:
+            print(addon)
+
         logging.info("Update list: {0}".format(to_update))
         self.LoadingGifSignal.emit(True)
         current_download_val = 1
         download_failed_list = []
+        self.window.ui.btnDownloadUpdates.setVisible(False)
 
         for addon in to_update:
             self.SetUpdateCount.emit(current_download_val, len(to_update))
@@ -362,6 +401,8 @@ class MainWindow(QMainWindow):
         else:
             update_text = "All AddOns were downloaded and extracted successfully to AddOns folder."
             self.MessageBox.emit("Complete", update_text, "inform")
+
+        self.OutputUpdater.emit(update_text)
 
 
 def main():

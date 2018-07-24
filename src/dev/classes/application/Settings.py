@@ -2,6 +2,7 @@ import simplejson
 import os
 import logging
 from sortedcontainers import sorteddict
+import datetime
 
 config_path = './config/'
 config_file_name = 'config.json'
@@ -77,6 +78,12 @@ class Settings(object):
             self.addons['addons'] = self.config['addons']
             self.config.pop('addons', None)
             self.save_config()
+            self.save_addons()
+
+        now = datetime.datetime.now()
+        for addon in self.addons['addons']:
+            if 'last_update_date' not in self.addons['addons'][addon]:
+                self.addons['addons'][addon]['last_update_date'] = "{0}/{1}/{2}".format(now.month, now.day, now.year)
             self.save_addons()
 
     def write_addon_info(self, key, info):
