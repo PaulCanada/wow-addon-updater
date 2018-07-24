@@ -3,6 +3,7 @@ import requests
 import logging
 from src.dev.classes.addon.Addon import Addon
 import zipfile
+import datetime
 
 test_url_a = "https://wow.curseforge.com/projects/deadly-boss-mods"
 test_url_b = "https://www.curseforge.com/wow/addons/file"
@@ -66,9 +67,13 @@ class Downloader(object):
                 logging.debug("Transformed key: {0}".format(key.title().replace("-", " ").replace("_", " ")))
 
                 if str(key) == addon.name:
+                    now = datetime.datetime.now()
                     logging.debug("Addon found for key!")
                     logging.debug("Item's latest version: {0}".format(addon.latest_version))
                     self.parent.settings.addons['addons'][key]['current_version'] = addon.latest_version
+                    self.parent.settings.addons['addons'][key]['last_update_data'] = "{0}/{1}/{2}".format(now.month,
+                                                                                                          now.day,
+                                                                                                          now.year)
                     logging.debug("New current version: {0}".format(
                         self.parent.settings.addons['addons'][key]['current_version']))
 

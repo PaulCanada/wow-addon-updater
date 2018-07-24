@@ -194,6 +194,7 @@ class MainWindow(QMainWindow):
 
         curr_ver_item = QStandardItem(addon.current_version)
         latest_ver_item = QStandardItem(addon.latest_version)
+        update_date_item = QStandardItem(addon.last_update_date)
 
         logging.debug("Parent item: {0}".format(addon.name))
 
@@ -203,6 +204,7 @@ class MainWindow(QMainWindow):
         curr_ver_item_identifier = QStandardItem("Current Version: ")
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
         remove_addon_item_identifier = QStandardItem("Remove Addon: ")
+        update_date_item_identifier = QStandardItem("Date Updated: ")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -212,6 +214,7 @@ class MainWindow(QMainWindow):
 
         parent_item.appendRow([curr_ver_item_identifier, curr_ver_item])
         parent_item.appendRow([latest_ver_item_identifier, latest_ver_item])
+        parent_item.appendRow([update_date_item_identifier, update_date_item])
 
         parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
         self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
@@ -257,7 +260,8 @@ class MainWindow(QMainWindow):
 
         for parent_name in tree_data:
             current_addon = Addon(tree_data[parent_name]['url'], tree_data[parent_name]['name'],
-                                  tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'])
+                                  tree_data[parent_name]['current_version'], tree_data[parent_name]['latest_version'],
+                                  tree_data[parent_name]['last_update_date'])
 
             self.AddAddon.emit(current_addon, self.tree_model, self.model)
 

@@ -13,11 +13,12 @@ class Addon(object):
     wow_ace_locator = ''
     tukui_locator = 'downloads/'
 
-    def __init__(self, url='', name='', current_version='', latest_version=''):
+    def __init__(self, url='', name='', current_version='', latest_version='', update_date='Unknown'):
         self.url = url
         self.name = name
         self.current_version = current_version
         self.latest_version = latest_version
+        self.last_update_date = update_date
         self.addon_source = ''
 
         self.valid_url = self.check_for_valid_url()
