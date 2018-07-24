@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         # UpdateProgressBarValue = pyqtSignal(int)
         # UpdateProgressBarMax = pyqtSignal(int)
         RemoveAddon = pyqtSignal(str)
+        ForceUpdateAddon = pyqtSignal(Addon)
         LoadingGifSignal = pyqtSignal(bool)
         SetUpdateCount = pyqtSignal(int, int)
 
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
         # self.UpdateProgressBarValue.connect(self.set_progress_bar_value)
         # self.UpdateProgressBarMax.connect(self.set_progress_bar_max)
         self.RemoveAddon.connect(self.remove_addon)
+        self.ForceUpdateAddon.connect(self.force_update_addon)
         self.LoadingGifSignal.connect(self.toggle_loading_gif)
         self.SetUpdateCount.connect(self.set_update_count_value)
 
@@ -179,6 +181,7 @@ class MainWindow(QMainWindow):
 
         url_item = QStandardItem()
         remove_addon_item = QStandardItem()
+        update_addon_item = QStandardItem()
 
         # Create a QLabel to allow following hyperlinks in the table.
         url_label = QLabel()
@@ -191,6 +194,11 @@ class MainWindow(QMainWindow):
         remove_addon_button.setText("Remove {0}".format(addon.name))
         remove_addon_button.clicked.connect(lambda: self.RemoveAddon.emit(addon.name))
         remove_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
+
+        update_addon_button = QPushButton()
+        update_addon_button.setText("Force Update {0}".format(addon.name))
+        update_addon_button.clicked.connect(lambda: self.ForceUpdateAddon.emit(addon))
+        update_addon_button.setMaximumSize(80 + (len(remove_addon_button.text()) * 5), 30)
 
         curr_ver_item = QStandardItem(addon.current_version)
         latest_ver_item = QStandardItem(addon.latest_version)
@@ -205,6 +213,7 @@ class MainWindow(QMainWindow):
         latest_ver_item_identifier = QStandardItem("Latest Version: ")
         remove_addon_item_identifier = QStandardItem("Remove Addon: ")
         update_date_item_identifier = QStandardItem("Date Updated: ")
+        force_update_identifier = QStandardItem("Update: ")
 
         # Append URL, Current Version, and Latest Version to the parent
         parent_item.appendRow([url_item_identifier, url_item])
@@ -218,6 +227,9 @@ class MainWindow(QMainWindow):
 
         parent_item.appendRow([remove_addon_item_identifier, remove_addon_item])
         self.window.ui.tviewAddons.setIndexWidget(remove_addon_item.index(), remove_addon_button)
+
+        parent_item.appendRow([force_update_identifier, update_addon_item])
+        self.window.ui.tviewAddons.setIndexWidget(update_addon_item.index(), update_addon_button)
 
         # self.window.ui.tviewAddons.setColumnWidth(0, self.window.ui.tviewAddons.columnWidth(0) + 50)
 
@@ -245,6 +257,21 @@ class MainWindow(QMainWindow):
             self.window.ui.tviewAddons.selectionModel().setCurrentIndex(self.window.ui.tviewAddons.indexAbove(index),
                                                                         QItemSelectionModel.ClearAndSelect)
             self.model.removeRow(parent.row())
+
+    @pyqtSlot(Addon)
+    def force_update_addon(self, addon):
+        if addon.name not in self.settings.addons['addons']:
+            return
+
+        message_box = QMessageBox.question(None, "Confirmation",
+                                           "Are you sure you want to force update {0}?".format(addon.name),
+                                           QMessageBox.Yes, QMessageBox.No)
+
+        if message_box == QMessageBox.Yes:
+            addon.addon_source = addon.get_website_type()
+            self.settings.files_to_update = [addon]
+            # self.DownloadStart.emit()
+            self.download_worker.start()
 
     @pyqtSlot()
     def update_tree_view(self):
@@ -345,6 +372,10 @@ class MainWindow(QMainWindow):
     def execute_download(self):
         d = Downloader(self)
         to_update = self.settings.files_to_update
+
+        for addon in to_update:
+            print(addon)
+
         logging.info("Update list: {0}".format(to_update))
         self.LoadingGifSignal.emit(True)
         current_download_val = 1
