@@ -35,6 +35,13 @@ class Addon(object):
                 if self.latest_version is None:
                     self.valid_url = False
 
+    def __str__(self):
+        return ("Name: {0}, URL: {1}, Current Version: {2}, Latest Version: {3}, Update Date: {4}".format(self.name,
+                                                                                                        self.url,
+                                                                                                        self.current_version,
+                                                                                                        self.latest_version,
+                                                                                                        self.last_update_date))
+
     def get_version_index(self, addon_path):
         return{
             'curse-projects': self.curse_project_locator,
