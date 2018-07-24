@@ -306,8 +306,8 @@ class MainWindow(QMainWindow):
         self.window.ui.btnCheckForUpdates.setText("Check For Updates")
         self.window.ui.btnCheckForUpdates.setEnabled(True)
 
-        if update_list:
-            self.PromptUpdate.emit(update_list)
+        # if update_list:
+        self.PromptUpdate.emit(update_list)
 
     @pyqtSlot(list)
     def prompt_to_update(self, update_list):
@@ -332,7 +332,7 @@ class MainWindow(QMainWindow):
             # message_box = QMessageBox()
             # message_box.setWindowTitle("Checker")
             # message_box.setText("All AddOns are up to date!")
-            self.OutputUpdater.emit("All AddOns are up to to date.")
+            self.OutputUpdater.emit("\nAll AddOns are currently up to to date.")
             # message_box.setStandardButtons(QMessageBox.Ok)
             #
             # message_box.exec()
@@ -345,6 +345,7 @@ class MainWindow(QMainWindow):
         self.LoadingGifSignal.emit(True)
         current_download_val = 1
         download_failed_list = []
+        self.window.ui.btnDownloadUpdates.setVisible(False)
 
         for addon in to_update:
             self.SetUpdateCount.emit(current_download_val, len(to_update))
@@ -366,7 +367,7 @@ class MainWindow(QMainWindow):
             update_text = "All AddOns were downloaded and extracted successfully to AddOns folder."
             self.MessageBox.emit("Complete", update_text, "inform")
 
-        self.window.ui.btnDownloadUpdates.setVisible(False)
+        self.OutputUpdater.emit(update_text)
 
 
 def main():
