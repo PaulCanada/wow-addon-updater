@@ -43,7 +43,7 @@ class SettingsWindow(QDialog):
     def set_wow_dir(self, settings):
         file_name = open_file_dialog("Browse for World of Warcraft AddOns Directory")
 
-        if file_name is not None:
+        if file_name:
 
             if not str(file_name).endswith('/Interface/AddOns'):
 
