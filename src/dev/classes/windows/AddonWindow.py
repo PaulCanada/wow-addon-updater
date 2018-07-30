@@ -115,7 +115,4 @@ class AddonWindow(QDialog):
             return True
 
     def check_if_addon_in_config(self, addon):
-        if addon.name in self.settings.addons['addons']:
-            return True
-        else:
-            return False
+        return addon.name in self.settings.addons['addons']
