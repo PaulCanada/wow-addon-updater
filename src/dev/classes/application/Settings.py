@@ -86,6 +86,10 @@ class Settings(object):
                 self.addons['addons'][addon]['last_update_date'] = "{0}/{1}/{2}".format(now.month, now.day, now.year)
             self.save_addons()
 
+            if 'last_update_data' in self.addons['addons'][addon]:
+                self.addons['addons'][addon]['last_update_date'] = self.addons['addons'][addon]['last_update_data']
+                del self.addons['addons'][addon]['last_update_data']
+
     def write_addon_info(self, key, info):
         self.addons['addons'][key] = info
 
