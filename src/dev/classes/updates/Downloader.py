@@ -71,7 +71,7 @@ class Downloader(object):
                     logging.debug("Addon found for key!")
                     logging.debug("Item's latest version: {0}".format(addon.latest_version))
                     self.parent.settings.addons['addons'][key]['current_version'] = addon.latest_version
-                    self.parent.settings.addons['addons'][key]['last_update_data'] = "{0}/{1}/{2}".format(now.month,
+                    self.parent.settings.addons['addons'][key]['last_update_date'] = "{0}/{1}/{2}".format(now.month,
                                                                                                           now.day,
                                                                                                           now.year)
                     logging.debug("New current version: {0}".format(
